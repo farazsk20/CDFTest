@@ -1,0 +1,71 @@
+<form #frmCreate="ngForm">
+  <h2 mat-dialog-title>Add New Bid</h2>
+  <mat-dialog-content>
+    <div fxLayout="row wrap" fxLayoutAlign="start end">
+      <!-- <mat-form-field fxFlex="100%">
+        <mat-select placeholder="Region" id="Region" name="Region" (selectionChange)="regionSelect($event.value)" required>
+          <mat-option *ngFor="let region of regions" [value]="region">
+            {{ region.Name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field> -->
+      <mat-form-field fxFlex="100%">
+
+        <input #autoInput type="text" placeholder="Region" id="Region" name="Region" aria-label="Number" matInput [formControl]="myControl"
+          [matAutocomplete]="auto">
+        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="regionSelect($event)">
+          <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+            {{ option.Name }}
+          </mat-option>
+        </mat-autocomplete>
+
+      </mat-form-field>
+
+      <mat-form-field fxFlex="100%">
+
+        <input #autoInput type="text" placeholder="Location" id="Location" name="Location" aria-label="Number" matInput [formControl]="myControlloc"
+          [matAutocomplete]="auto1" [(ngModel)]="selectedLocation.Location" [disabled]="!Locations" required>
+        <mat-autocomplete #auto1="matAutocomplete" [displayWith]="displayFnLoc">
+          <mat-option *ngFor="let location of filteredOptionsLoc | async" [value]="location">
+            {{ location.Name }}
+          </mat-option>
+        </mat-autocomplete>
+
+      </mat-form-field>
+      <!-- <mat-form-field fxFlex="100%">
+        <mat-select placeholder="Location" id="Location" name="Location" [(ngModel)]="selectedLocation.Location" [disabled]="!Locations"
+          required>
+          <mat-option *ngFor="let location of Locations" [value]="location">
+            {{ location.Name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field> -->
+      <mat-form-field fxFlex="100%">
+
+        <input #autoInput type="text" placeholder="LOS" id="LOS" name="LOS" [(ngModel)]="selectedLocation.LOS" aria-label="Number"
+          matInput [formControl]="myControllos" [matAutocomplete]="auto2" [disabled]="!selectedLocation" required>
+        <mat-autocomplete #auto2="matAutocomplete" [displayWith]="displayFnLos">
+          <mat-option *ngFor="let los of filteredOptionsLos | async" [value]="los">
+            {{ los.Value }}
+          </mat-option>
+        </mat-autocomplete>
+
+      </mat-form-field>
+
+      <!-- <mat-form-field fxFlex="100%">
+        <mat-select placeholder="LOS" id="LOS" name="LOS" [(ngModel)]="selectedLocation.LOS" [disabled]="!selectedLocation" required>
+          <mat-option *ngFor="let los of LOS" [value]="los">
+            {{ los.Value }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field> -->
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions fxLayoutAlign="end center" fxLayoutGap="10px">
+    <button mat-stroked-button mat-dialog-close color="warn">Cancel</button>
+    <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
+    <button mat-stroked-button [mat-dialog-close]="selectedLocation" color="accent" [disabled]="!frmCreate.form.valid">
+      Add Bid
+    </button>
+  </mat-dialog-actions>
+</form>

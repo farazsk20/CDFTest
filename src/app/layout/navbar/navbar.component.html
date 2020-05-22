@@ -1,0 +1,17 @@
+<mat-toolbar color="primary" class="mat-elevation-z6">
+  <mat-toolbar-row>
+    <span>
+      <button mat-icon-button (click)="snav.toggle()"><mat-icon>menu</mat-icon></button>
+      Application Title
+    </span>
+
+    <!-- This fills the remaining space of the current row -->
+    <span fxFlex></span>
+    <span fxLayoutGap="10px">
+      <button mat-button *ngIf="userToken" (click)="signout()"
+        matTooltip="Logout">
+        <mat-icon class="fal fa-sign-out" aria-hidden="true"></mat-icon>
+      </button>
+    </span>
+  </mat-toolbar-row>
+</mat-toolbar>

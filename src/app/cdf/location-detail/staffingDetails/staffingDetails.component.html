@@ -1,0 +1,205 @@
+<mat-card class="mat-elevation-z8">
+  <div
+    fxLayout="column"
+    fxLayoutAlign="start stretch"
+    fxLayoutGap="15px"
+    fxFlexFill
+  >
+    <div fxFlexFill fxLayout="row" fxLayoutAlign="end start" fxLayoutGap="10px">
+      <button
+        fxFlexAlign="end"
+        mat-mini-fab
+        color="accent"
+        (click)="AddNewStaff()"
+        matTooltip="Add Staffing Details"
+        matTooltipPosition="above"
+        [disabled]="
+          !location.AES_Union &&
+          !location.CBM_Union &&
+          !location.NonUnionBenefit
+        "
+      >
+        <mat-icon>add</mat-icon>
+      </button>
+      <button
+        fxFlexAlign="end"
+        mat-mini-fab
+        color="accent"
+        (click)="RemoveStaff()"
+        [disabled]="!selection.selected.length > 0"
+        matTooltip="Remove
+        Staffing Details"
+        matTooltipPosition="above"
+      >
+        <mat-icon>remove</mat-icon>
+      </button>
+      <button
+        fxFlexAlign="end"
+        mat-mini-fab
+        color="accent"
+        (click)="EditStaff(selection.selected[0])"
+        [disabled]="
+          selection.selected.length > 1 || selection.selected.length == 0
+        "
+        matTooltip="Edit Staffing Record"
+        matTooltipPosition="above"
+      >
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button
+        fxFlexAlign="end"
+        mat-mini-fab
+        color="accent"
+        (click)="confirmActuals()"
+        [disabled]="location.Staff.length == 0"
+        matTooltip="Confirm
+        Staffing Actuals"
+        matTooltipPosition="above"
+      >
+        <mat-icon>check</mat-icon>
+      </button>
+    </div>
+    <table mat-table #table [dataSource]="dataSource" style="width:100%;">
+      <ng-container matColumnDef="Select">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let row">
+          <mat-checkbox
+            (click)="$event.stopPropagation()"
+            (change)="$event ? selection.toggle(row) : null"
+            [checked]="selection.isSelected(row)"
+          >
+          </mat-checkbox>
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+
+      <ng-container matColumnDef="Classification">
+        <th mat-header-cell *matHeaderCellDef>Classification</th>
+        <td mat-cell *matCellDef="let row">
+          {{
+            row.Classification?.Value !== "Other"
+              ? row.Classification?.Value
+              : row.JobDescription
+          }}
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+
+      <ng-container matColumnDef="Days">
+        <th mat-header-cell *matHeaderCellDef>Days Per Week</th>
+        <td mat-cell *matCellDef="let row">{{ row.DaysPerWeek }}</td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+
+      <ng-container matColumnDef="Number">
+        <th mat-header-cell *matHeaderCellDef>No. of Employees</th>
+        <td mat-cell *matCellDef="let row">{{ row.NumEmployees }}</td>
+        <td mat-footer-cell *matFooterCellDef>
+          {{ locService.getTotalEmployeeCount(location) }}
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+
+      <ng-container matColumnDef="Hours">
+        <th mat-header-cell *matHeaderCellDef>Daily Hours Totals</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.DailyHours * row.NumEmployees }}
+        </td>
+        <td mat-footer-cell *matFooterCellDef>
+          {{ locService.getDailyHourTotal(location) }}
+        </td>
+      </ng-container>
+
+      <!-- <ng-container matColumnDef="WeeklyHours">
+        <th mat-header-cell *matHeaderCellDef> Weekly Hours Totals</th>
+        <td mat-cell *matCellDef="let row"> {{row.DailyHours * row.NumEmployees * 5}} </td>
+        <td mat-footer-cell *matFooterCellDef> {{locService.getDailyHourTotal(location) * 5}} </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container> -->
+      <ng-container matColumnDef="MonthlyHours">
+        <th mat-header-cell *matHeaderCellDef>Monthly Hours Totals</th>
+        <td mat-cell *matCellDef="let row">
+          {{
+            row.DailyHours * row.NumEmployees * row.DaysPerWeek * WeeksPerMonth
+              | number: "1.2-2"
+          }}
+        </td>
+        <td mat-footer-cell *matFooterCellDef>
+          {{
+            locService.sumMonthlyHours(location) * WeeksPerMonth
+              | number: "1.2-2"
+          }}
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+
+      <ng-container matColumnDef="Rate">
+        <th mat-header-cell *matHeaderCellDef>Wage Rate</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.Rate | currency }}
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+
+      <!-- <ng-container matColumnDef="WeeklyCost">
+        <th mat-header-cell *matHeaderCellDef> Cost Per Week </th>
+        <td mat-cell *matCellDef="let row"> {{row.Rate * row.DailyHours * row.NumEmployees * row.DaysPerWeek | currency}} </td>
+        <td mat-footer-cell *matFooterCellDef> {{locService.getWeeklyStaffingCost(location) | currency}} </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container> -->
+      <ng-container matColumnDef="MonthlyCost">
+        <th mat-header-cell *matHeaderCellDef>Cost Per Month</th>
+        <td mat-cell *matCellDef="let row">
+          {{
+            row.Rate *
+              row.DailyHours *
+              row.DaysPerWeek *
+              row.NumEmployees *
+              WeeksPerMonth | currency: "USD":"symbol":"1.2-2"
+          }}
+        </td>
+        <td mat-footer-cell *matFooterCellDef>
+          {{
+            locService.getMonthlyStaffingCost(location, WeeksPerMonth)
+              | currency: "USD":"symbol":"1.2-2"
+          }}
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+
+      <ng-container matColumnDef="Benefits">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let row">
+          <button
+            mat-icon-button
+            (click)="openBenefitsBottomSheet(row)"
+            color="primary"
+            matTooltip="Union Benefits"
+            [disabled]="
+              (!row.AES_Benefits || row.AES_Benefits.length == 0) &&
+              (!row.CBM_Benefits || row.CBM_Benefits.length == 0)
+            "
+          >
+            <mat-icon aria-label="Union Benefits">help_outline</mat-icon>
+          </button>
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+
+      <ng-container matColumnDef="Edit">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let row">
+          <button mat-stroked-button color="accent" (click)="editCdf(row)">
+            Edit
+          </button>
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      <tr mat-footer-row *matFooterRowDef="displayedColumns"></tr>
+    </table>
+  </div>
+</mat-card>

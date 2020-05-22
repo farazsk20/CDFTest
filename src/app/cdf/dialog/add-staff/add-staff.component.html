@@ -1,0 +1,281 @@
+<h2 mat-dialog-title>Add New Staffing Details</h2>
+<mat-dialog-content>
+  <form [formGroup]="frmAddStaff">
+    <div fxLayout="row wrap" fxLayoutAlign="start end" fxLayoutGap="15px" style="margin-bottom:15px;">
+      <div fxFlexFill fxLayout="row wrap" fxLayoutAlign="start end" fxLayoutGap="5px">
+
+        <mat-form-field fxFlex="100%">
+          <input type="text" matInput formControlName="Classification"  [matAutocomplete]="auto" #ClassificationFld="matInput"
+           (blur)="checkClassification();">
+          <mat-hint>Begin typing to select a Job Classification</mat-hint>
+        </mat-form-field>
+
+        <mat-autocomplete #auto="matAutocomplete" [displayWith]="getOptionText">
+          <mat-option *ngFor="let item of filteredJobs | async" [value]="item">{{item.Value}}</mat-option>
+        </mat-autocomplete>
+
+        <mat-form-field fxFlex>
+          <input formControlName="NumEmployees" matInput placeholder="# of Employees" type="number" required (change)="updateBenefits()">
+        </mat-form-field>
+
+        <mat-form-field fxFlex>
+          <input formControlName="DailyHours" matInput placeholder="Daily Hours" type="number" required (change)="updateBenefits()">
+        </mat-form-field>
+
+        <mat-form-field fxFlex>
+          <input formControlName="DaysPerWeek" matInput placeholder="Days Per Week" type="number" required (change)="updateBenefits()">
+        </mat-form-field>
+      </div>
+
+      <div fxFlexFill fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="25px">
+        <mat-form-field fxFlex="33%">
+          <input formControlName="Rate" matInput placeholder="Rate" type="number" required>
+        </mat-form-field>
+        <mat-checkbox fxFlex="33%" formControlName="ProductionRate" *ngIf="location.LOS.CBM_Unions.length> 0">Production
+          Rate
+        </mat-checkbox>
+      </div>
+
+      <div fxFlex fxLayout="row" fxLayoutGap="20px">
+        <div fxLayout="column" fxFlex>
+          <label>
+            <strong>Shift Type</strong>
+          </label>
+          <mat-radio-group formControlName="Shift" aria-label="Shift Type" fxFlex fxLayout="column" required>
+            <mat-radio-button *ngFor="let item of shiftTypes" [value]="item"
+              [checked]="frmAddStaff.controls.Shift.value.Id == item.Id" style="margin:5px;">
+              {{item.Value}}
+            </mat-radio-button>
+          </mat-radio-group>
+        </div>
+
+        <div fxLayout="column" fxFlex *ngIf="laborTypes">
+          <label>
+            <strong>Labor Type</strong>
+          </label>
+          <mat-radio-group formControlName="LaborType" aria-label="Labor Type" fxFlex fxLayout="column" required>
+            <mat-radio-button *ngFor="let item of laborTypes" [value]="item" (change)="laborTypeChange($event)"
+              [checked]="frmAddStaff.controls.LaborType.value.Id == item.Id" style="margin:5px;">{{item.Value}}
+            </mat-radio-button>
+          </mat-radio-group>
+        </div>
+
+        <div fxLayout="column" fxFlex *ngIf="hwStatusTypes">
+          <label>
+            <strong>H&W Status</strong>
+          </label>
+          <mat-radio-group formControlName="HWStatus" aria-label="H&W Status" fxFlex fxLayout="column" required>
+            <mat-radio-button *ngFor="let item of hwStatusTypes" [value]="item" (change)="HWStatusChange($event)"
+              [checked]="frmAddStaff.controls.HWStatus.value.Id == item.Id" style="margin:5px;">{{item.Value}}
+            </mat-radio-button>
+          </mat-radio-group>
+        </div>
+      </div>
+    </div>
+
+    <br>
+
+    <div *ngIf="frmAddStaff.controls.CBM_Benefits.controls.length> 0">
+
+      <div fxLayout="row" fxLayoutGap="5px" fxLayoutAlign="end end">
+        <button mat-raised-button color="accent" (click)="add_CBM_Rate()">Add CBM Union Benefit</button>
+      </div>
+      <br>
+      <div formArrayName="CBM_Benefits">
+        <div *ngFor="let benefit of frmAddStaff.controls.CBM_Benefits.controls; let i= index">
+
+          <div [formGroupName]="i" fxLayout="row" fxLayoutGap="5px" fxLayoutAlign="center end"
+            [ngClass]="{'active':frmAddStaff.controls.CBM_Benefits.controls[i].get('Active').value}">
+            <div style="margin-left: 10px;padding-bottom: 20px;" fxFlex>
+              <button mat-raised-button color="accent" (click)="editCBMBenefit(i)">
+                <mat-icon aria-label="label">edit</mat-icon>
+              </button>
+            </div>
+
+            <mat-form-field fxFlex="13%">
+              <input formControlName="BenefitType" matInput
+                [value]="frmAddStaff.controls.CBM_Benefits.controls[i].controls.BenefitType.value.Value"
+                placeholder="Type" readonly>
+            </mat-form-field>
+
+            <mat-form-field fxFlex="13%">
+              <input formControlName="Rate" matInput placeholder="Rate" readonly
+              [value]="frmAddStaff.controls.CBM_Benefits.controls[i].controls.Rate.value |  currency :'USD':'symbol':'1.2-5' ">
+            </mat-form-field>
+
+            <mat-form-field fxFlex="13%">
+              <input formControlName="RateType" matInput placeholder="Rate Type"
+                [value]="frmAddStaff.controls.CBM_Benefits.controls[i].controls.RateType.value.Value" readonly>
+            </mat-form-field>
+
+            <mat-form-field fxFlex="13%">
+              <input formControlName="Contribution" matInput #Contribution placeholder="Contribution" readonly type="text"
+                [value]="frmAddStaff.controls.CBM_Benefits.controls[i].controls.Contribution.value | currency: 'USD':'symbol':'1.2-2'">
+            </mat-form-field>
+
+            <mat-form-field fxFlex="13%">
+              <input formControlName="EffectiveDate" name="EffectiveDate" matInput [matDatepicker]="EffectiveDate"
+                placeholder="EffectiveDate" readonly>
+              <mat-datepicker-toggle matSuffix [for]="EffectiveDate" disabled></mat-datepicker-toggle>
+              <mat-datepicker #EffectiveDate></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field fxFlex="13%">
+              <input formControlName="ExpirationDate" name="ExpirationDate" matInput [matDatepicker]="ExpirationDate"
+                placeholder="ExpirationDate" readonly>
+              <mat-datepicker-toggle matSuffix [for]="ExpirationDate" disabled></mat-datepicker-toggle>
+              <mat-datepicker #ExpirationDate></mat-datepicker>
+            </mat-form-field>
+
+
+            <div style="margin-left: 10px;padding-bottom: 20px;" fxFlex>
+              <mat-checkbox formControlName="Override">Override</mat-checkbox>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="frmAddStaff.controls.AES_Benefits.controls.length> 0">
+
+      <div fxLayout="row" fxLayoutGap="5px" fxLayoutAlign="end end">
+        <button mat-raised-button color="accent" (click)="add_AES_Rate()">Add AES Union Benefit</button>
+      </div>
+      <br>
+      <div formArrayName="AES_Benefits">
+        <div *ngFor="let benefit of frmAddStaff.controls.AES_Benefits.controls; let i= index">
+
+          <div [formGroupName]="i" fxLayout="row" fxLayoutGap="5px" fxLayoutAlign="center end"
+            [ngClass]="{'active':frmAddStaff.controls.AES_Benefits.controls[i].get('Active').value}">
+            <div style="margin-left: 10px;padding-bottom: 20px;" fxFlex>
+              <button mat-raised-button color="accent" (click)="editAESBenefit(i)">
+                <mat-icon aria-label="label">edit</mat-icon>
+              </button>
+            </div>
+
+            <mat-form-field fxFlex="13%">
+              <input formControlName="Type" matInput
+                [value]="frmAddStaff.controls.AES_Benefits.controls[i].controls.Type.value.Value"
+                placeholder="Type" readonly>
+            </mat-form-field>
+
+            <mat-form-field fxFlex="13%">
+              <input formControlName="PricingMethod" matInput placeholder="Rate Type"
+                [value]="frmAddStaff.controls.AES_Benefits.controls[i].controls.PricingMethod.value.Value" readonly>
+            </mat-form-field>
+
+            <mat-form-field fxFlex="13%">
+              <input formControlName="Rate" matInput placeholder="Rate" readonly
+               [value]="frmAddStaff.controls.AES_Benefits.controls[i].controls.Rate.value | currency :'USD':'symbol':'1.2-5' ">
+            </mat-form-field>
+
+            <mat-form-field fxFlex="13%">
+              <input formControlName="Contribution" matInput placeholder="Contribution" readonly
+               [value]="frmAddStaff.controls.AES_Benefits.controls[i].controls.Contribution.value | currency: 'USD':'symbol':'1.2-2'">
+            </mat-form-field>
+
+            <mat-form-field fxFlex="13%">
+              <input formControlName="EffectiveDate" name="EffectiveDate" matInput [matDatepicker]="EffectiveDate"
+                placeholder="EffectiveDate" readonly>
+              <mat-datepicker-toggle matSuffix [for]="EffectiveDate" disabled></mat-datepicker-toggle>
+              <mat-datepicker #EffectiveDate></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field fxFlex="13%">
+              <input formControlName="ExpirationDate" name="ExpirationDate" matInput [matDatepicker]="ExpirationDate"
+                placeholder="ExpirationDate" readonly>
+              <mat-datepicker-toggle matSuffix [for]="ExpirationDate" disabled></mat-datepicker-toggle>
+              <mat-datepicker #ExpirationDate></mat-datepicker>
+            </mat-form-field>
+
+
+            <div style="margin-left: 10px;padding-bottom: 20px;" fxFlex>
+              <mat-checkbox formControlName="Override">Override</mat-checkbox>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="frmAddStaff.controls.NonUnion_Benefits.controls.length> 0">
+
+      <!-- <div fxLayout="row" fxLayoutGap="5px" fxLayoutAlign="end end">
+        <button mat-raised-button color="accent" (click)="add_NonUnion_Rate()">Add Non-Union Benefit</button>
+      </div> -->
+      <div formArrayName="NonUnion_Benefits">
+        <div *ngFor="let benefit of frmAddStaff.controls.NonUnion_Benefits.controls; let i= index">
+
+          <div [formGroupName]="i" fxLayout="row" fxLayoutGap="5px" fxLayoutAlign="start end">
+
+            <div style="margin-left: 10px;padding-bottom: 20px;" fxFlex="13%">
+              <button mat-raised-button color="accent" (click)="editNonUnionBenefit(i)">
+                <mat-icon aria-label="label">edit</mat-icon>
+              </button>
+            </div>
+
+            <mat-form-field fxFlex="13%">
+              <input formControlName="Rate" matInput placeholder="Rate" readonly
+               [value]="frmAddStaff.controls.NonUnion_Benefits.controls[i].controls.Rate.value | currency :'USD':'symbol':'1.2-5' ">
+            </mat-form-field>
+
+            <mat-form-field fxFlex="13%">
+              <input formControlName="RateType" matInput placeholder="Rate Type"
+                [value]="frmAddStaff.controls.NonUnion_Benefits.controls[i].controls.RateType.value.Value" readonly>
+            </mat-form-field>
+
+              <mat-form-field fxFlex="13%">
+                <input formControlName="Markup" matInput placeholder="Mark Up"
+                   readonly>
+              </mat-form-field>
+
+
+            <mat-form-field fxFlex="13%">
+              <input formControlName="Contribution" matInput placeholder="Contribution" readonly
+              [value]="frmAddStaff.controls.NonUnion_Benefits.controls[i].controls.Contribution.value | currency : 'USD' : 'symbol' : '1.2-2'">
+            </mat-form-field>
+
+            <div style="margin-left: 10px;padding-bottom: 20px;" fxFlex>
+              <mat-checkbox formControlName="Override">Override</mat-checkbox>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- <div *ngIf="newStaff.CBM_Benefits && newStaff.CBM_Benefits.length> 0">
+      <app-cbm-union-benefits
+        (formReady)="formInitialized('CBM_Benefits', $event)"
+        [benefits]="newStaff.CBM_Benefits"
+        [formGroup]="frmAddStaff"
+        [staff]="newStaff"
+        [weeksPerMonth]="WeeksPerMonth">
+      </app-cbm-union-benefits>
+    </div>
+
+    <div *ngIf="newStaff.AES_Benefits && newStaff.AES_Benefits.length> 0">
+      <app-aes-union-benefits
+        (formReady)="formInitialized('AES_Benefits', $event)"
+        [benefits]="newStaff.AES_Benefits"
+        [formGroup]="frmAddStaff"
+        [staff]="newStaff"
+        [weeksPerMonth]="WeeksPerMonth">
+      </app-aes-union-benefits>
+    </div>
+
+    <div *ngIf="newStaff.NonUnion_Benefits && newStaff.NonUnion_Benefits.length> 0">
+      <app-non-union-benefits
+        (formReady)="formInitialized('NonUnion_Benefits', $event)"
+        [benefits]="newStaff.NonUnion_Benefits"
+        [formGroup]="frmAddStaff"
+        [staff]="newStaff"
+        [weeksPerMonth]="WeeksPerMonth">
+      </app-non-union-benefits>
+    </div> -->
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions fxLayoutAlign="end center" fxLayoutGap="10px">
+  <button mat-stroked-button [mat-dialog-close]="CancelChanges()" color="warn">Cancel</button>
+  <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
+  <button mat-stroked-button [mat-dialog-close]="CloseDialog()" color="accent" [disabled]="!frmAddStaff.valid">Add
+    Staff</button>
+</mat-dialog-actions>

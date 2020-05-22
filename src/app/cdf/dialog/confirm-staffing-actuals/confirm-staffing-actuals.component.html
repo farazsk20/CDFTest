@@ -1,0 +1,27 @@
+
+
+<div class="title">Staffing Actuals</div>
+<hr>
+<br><br>
+<div [formGroup]="frmStaffActuals">
+  <div style="margin-bottom:15px;" formArrayName="Staff" *ngFor="let staff of myStaff.controls; let i= index;">
+    <div [formGroupName]="i" fxLayout="row" fxLayoutGap="5px" fxLayoutAlign="start end">
+
+      <mat-form-field fxFlex>
+        <input formControlName="JobClassification" matInput placeholder="Job Classification" readonly>
+      </mat-form-field>
+
+      <mat-form-field fxFlex>
+        <input formControlName="NumEmployees" matInput placeholder="Bid Amount" readonly>
+      </mat-form-field>
+
+      <mat-form-field fxFlex>
+        <input formControlName="Actual_NumEmployees" matInput placeholder="Actual Amount">
+      </mat-form-field>
+    </div>
+  </div>
+  <div fxLayout="row wrap" fxLayoutAlign="end" fxLayoutGap="10px">
+    <button mat-fab [mat-dialog-close]="Cancel()" color="warn"><mat-icon>cancel</mat-icon></button>
+    <button mat-fab [mat-dialog-close]="Close()" color="accent" [disabled]="!frmStaffActuals.valid"><mat-icon>check</mat-icon></button>
+  </div>
+</div>

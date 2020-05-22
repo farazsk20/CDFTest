@@ -1,0 +1,10 @@
+@import '~@angular/material/theming';
+
+@include mat-core();
+
+$ableServe-primary: mat-palette($mat-AbleServe-red);
+$ableServe-accent: mat-palette($mat-indigo);
+
+$ableServeTheme: mat-light-theme($ableServe-primary, $ableServe-accent);
+
+@include angular-material-theme($ableServeTheme);

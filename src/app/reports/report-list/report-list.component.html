@@ -1,0 +1,108 @@
+<div fxLayout="row" fxLayoutAlign="center start" fxFlexFill>
+  <div
+    fxFlex="80%"
+    fxFlex.lt-lg="95%"
+    fxLayout="column"
+    fxFlexFill
+    fxLayoutAlign="start stretch"
+    fxLayoutGap="10px"
+  >
+    <h1>CDF Report Listing</h1>
+    <table
+      mat-table
+      #table
+      [dataSource]="dataSource"
+      class="mat-elevation-z8"
+      style="width:100%;"
+    >
+      <!--       <ng-container matColumnDef="Select">
+                <th mat-header-cell *matHeaderCellDef> -->
+
+      <!-- <mat-checkbox (change)="$event ? masterToggle() : null" [checked]="selection.hasValue() && isAllSelected()"
+            [indeterminate]="selection.hasValue() && !isAllSelected()">
+          </mat-checkbox> -->
+      <!--         </th>
+                <td mat-cell *matCellDef="let row">
+                    <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
+                        [checked]="selection.isSelected(row)">
+                      </mat-checkbox>
+                  </td>
+              </ng-container> -->
+      <!--       <ng-container matColumnDef="Id">
+                <th mat-header-cell *matHeaderCellDef> ID </th>
+                <td mat-cell *matCellDef="let row"> {{row.Id}} </td>
+              </ng-container> -->
+      <ng-container matColumnDef="Title">
+        <th mat-header-cell *matHeaderCellDef>Title</th>
+        <td mat-cell *matCellDef="let row">{{ row.Title }}</td>
+      </ng-container>
+      <ng-container matColumnDef="City">
+        <th mat-header-cell *matHeaderCellDef>City</th>
+        <td mat-cell *matCellDef="let row">{{ row.City }}</td>
+      </ng-container>
+      <ng-container matColumnDef="State">
+        <th mat-header-cell *matHeaderCellDef>State</th>
+        <td mat-cell *matCellDef="let row">{{ row.State }}</td>
+      </ng-container>
+      <ng-container matColumnDef="NumLocations">
+        <th mat-header-cell *matHeaderCellDef>Bids</th>
+        <td mat-cell *matCellDef="let row">{{ row.LocationCount }}</td>
+      </ng-container>
+      <ng-container matColumnDef="Bids">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let row">
+          <mat-select
+            placeholder="Select"
+            [disabled]="row.Locations == 0 ? true : false"
+            (selectionChange)="BidSelected($event.value)"
+          >
+            <mat-option *ngFor="let bid of row.Locations" [value]="bid.Id">
+              {{ bid.Location.Name }}
+            </mat-option>
+          </mat-select>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="OpenCdfReport">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let row">
+          <button
+            mat-stroked-button
+            color="accent"
+            [disabled]="row.Locations == 0 ? true : false"
+            (click)="openCdfReport(row)"
+          >
+            View Cdf Report
+          </button>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="OpenWctReport">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let row">
+          <button
+            mat-stroked-button
+            color="accent"
+            [disabled]="row.Locations == 0 ? true : false"
+            (click)="openWctReport(row)"
+          >
+            View Wct Report
+          </button>
+        </td>
+      </ng-container>
+      <!-- <ng-container matColumnDef="OpenCostAnalysisReport">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let row">
+          <button
+            mat-stroked-button
+            color="accent"
+            [disabled]="row.Locations == 0 ? true : false"
+            (click)="openCostAnalysisReport(row)"
+          >
+            View Cost Analysis Report
+          </button>
+        </td>
+      </ng-container> -->
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+  </div>
+</div>

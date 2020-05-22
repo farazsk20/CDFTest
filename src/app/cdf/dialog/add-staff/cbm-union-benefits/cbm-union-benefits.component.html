@@ -1,0 +1,67 @@
+<div fxLayout="row" fxLayoutGap="5px" fxLayoutAlign="end end">
+  <button mat-stroked-button color="accent" (click)="add_CBM_Rate()">Add Rate</button>
+</div>
+<div [formGroup]="formGroup">
+
+  <div style="margin-bottom:15px;" formArrayName="CBM_Benefits" *ngFor="let benefit of CBM_Benefits.controls; let i= index;">
+
+    <div [formGroupName]="i" fxLayout="row" fxLayoutGap="5px" fxLayoutAlign="center end" [ngClass]="{'active':staff.CBM_Benefits[i].Active}">
+      <mat-form-field fxFlex="15%" *ngIf="!CBM_Benefits.controls[i].controls.Override.value">
+        <input formControlName="BenefitType" matInput placeholder="Type"
+          [value]="CBM_Benefits.controls[i].controls.BenefitType.value.Value">
+      </mat-form-field>
+
+      <mat-form-field fxFlex="15%" *ngIf="CBM_Benefits.controls[i].controls.Override.value">
+        <mat-select placeholder="Benefit Type" formControlName="BenefitType" [compareWith]="compareBenefitTypeFn"
+          (selectionChange)="update_CBM_Contribution(benefit,i)" required>
+          <mat-option *ngFor="let item of benefitTypes" [value]="item">
+            {{item.Value}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field fxFlex="10%">
+        <input formControlName="Rate" matInput placeholder="Rate" type="number"
+          [readonly]="!CBM_Benefits.controls[i].controls.Override.value"
+          (change)="update_CBM_Contribution(benefit,i)">
+      </mat-form-field>
+
+      <mat-form-field fxFlex="10%" *ngIf="!CBM_Benefits.controls[i].controls.Override.value">
+        <input formControlName="RateType" matInput placeholder="Rate Type" type="text"
+          [value]="CBM_Benefits.controls[i].controls.RateType.value.Value" readonly>
+      </mat-form-field>
+
+      <mat-form-field fxFlex="10%" *ngIf="CBM_Benefits.controls[i].controls.Override.value">
+        <mat-select placeholder="Rate Type" formControlName="RateType" [compareWith]="compareRateTypeFn"
+          (selectionChange)="update_CBM_Contribution(benefit,i)" required>
+          <mat-option *ngFor="let item of rateTypes" [value]="item">
+            {{item.Value}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field fxFlex="10%">
+        <input formControlName="Contribution" matInput placeholder="Total" readonly>
+      </mat-form-field>
+
+      <mat-form-field fxFlex="15%">
+        <input formControlName="EffectiveDate" name="EffectiveDate" matInput [matDatepicker]="EffectiveDate" placeholder="EffectiveDate" readonly>
+        <mat-datepicker-toggle matSuffix [for]="EffectiveDate"
+          [disabled]="!CBM_Benefits.controls[i].controls.Override.value"></mat-datepicker-toggle>
+        <mat-datepicker #EffectiveDate></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field fxFlex="15%">
+        <input formControlName="ExpirationDate" name="ExpirationDate" matInput [matDatepicker]="ExpirationDate" placeholder="ExpirationDate"
+          readonly>
+        <mat-datepicker-toggle matSuffix [for]="ExpirationDate"
+          [disabled]="!CBM_Benefits.controls[i].controls.Override.value"></mat-datepicker-toggle>
+        <mat-datepicker #ExpirationDate></mat-datepicker>
+      </mat-form-field>
+
+      <div style="margin-left: 10px;padding-bottom: 20px;" fxFlex="10%">
+        <mat-checkbox formControlName="Override" (change)="toggleCBM_Override($event, benefit, i)">Override</mat-checkbox>
+      </div>
+    </div>
+  </div>
+</div>

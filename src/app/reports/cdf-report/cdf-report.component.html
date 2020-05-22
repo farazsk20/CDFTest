@@ -1,0 +1,504 @@
+<div style="margin: 0 25px;">
+  <button
+    (click)="pdf.saveAs('demo-content.pdf')"
+    style="margin-top:40px; font-weight:bold; "
+  >
+    EXPORT TO PDF</button
+  ><span style="margin-left: 20px;"></span>
+  <button (click)="downloadExcel()" style="margin-top:20px; font-weight:bold;">
+    EXPORT TO EXCEL
+  </button>
+  <kendo-pdf-export #pdf paperSize="A4" margin="2cm">
+    <div fxLayout="row" fxLayoutAlign="center start" fxFlexFill #content>
+      <div
+        fxFlex="100%"
+        fxFlex.lt-lg="95%"
+        fxLayout="column"
+        fxFlexFill
+        fxLayoutAlign="start stretch"
+        fxLayoutGap="30px"
+      >
+        <table class="center">
+          <tr>
+            <td>
+              <h1>CONTRACT DATA FORM</h1>
+            </td>
+          </tr>
+        </table>
+
+        <table>
+          <tbody>
+            <tr>
+              <td>CONTRACT ORIGINATION DATE :</td>
+              <td>{{ cdf?.ContractStartDate | date: "MM/dd/yyyy" }}</td>
+              <td>CONTRACT EXPIRATION DATE :</td>
+              <td>{{ cdf?.ContractEndDate | date: "MM/dd/yyyy" }}</td>
+            </tr>
+            <tr>
+              <td>DIST :</td>
+              <td>ABLE ENGINEERING SERVICES</td>
+              <td>MARK UP :</td>
+              <td>{{ bid?.Markup }}%</td>
+            </tr>
+            <tr>
+              <td>M CODE:</td>
+              <td>{{ bid?.NonUnionBenefit?.Code }}</td>
+              <td>EFFECTIVE DATE :</td>
+              <td>{{ cdf?.ContractStartDate | date: "MM/dd/yyyy" }}</td>
+            </tr>
+            <tr>
+              <td>LOCATION CODE(ADP):</td>
+              <td>{{ cdf?.JobNumber ? cdf?.JobNumber : "LOCATION CODE" }}</td>
+              <td>UNION# :</td>
+              <td>{{ bid?.AES_Union?.Name }}</td>
+            </tr>
+            <tr>
+              <td>FUI/SUI CUTOFF :</td>
+              <td>{{ bid?.StopFlag?.Value }}</td>
+              <td>MONTHS :</td>
+              <td>{{ bid?.Months }}</td>
+            </tr>
+            <tr>
+              <td>WORK:</td>
+              <td>{{ cdf?.CustomerName }}</td>
+              <td>LOCATION:</td>
+              <td>
+                {{ bid?.Location?.Address }} {{ bid?.Location?.City }},
+                {{ bid?.Location?.State }} {{ bid?.Location?.ZipCode }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <table class="center">
+          <tbody>
+            <tr class="costs">
+              <th>Staff</th>
+              <th>Classification</th>
+              <th>Current Hours/Month</th>
+              <th>Current Rate</th>
+              <th>Monthly Cost</th>
+              <th>Annualized Cost</th>
+            </tr>
+            <tr *ngFor="let staff of bid?.Staff">
+              <td>{{ staff?.NumEmployees }}</td>
+              <td>{{ staff?.Classification.Value }}</td>
+              <td>
+                {{
+                  staff?.DailyHours *
+                    staff?.NumEmployees *
+                    staff?.DaysPerWeek *
+                    cdf?.WeeksPerMonth | number: "1.2-2"
+                }}
+              </td>
+              <td>{{ staff?.Rate | currency: "USD":"symbol":"1.2-5" }}</td>
+              <td>
+                {{
+                  staff?.Rate *
+                    staff.DailyHours *
+                    staff?.DaysPerWeek *
+                    staff?.NumEmployees *
+                    cdf?.WeeksPerMonth | currency: "USD":"symbol":"1.2-2"
+                }}
+              </td>
+              <td>
+                {{
+                  staff?.Rate *
+                    staff?.DailyHours *
+                    staff?.DaysPerWeek *
+                    staff?.NumEmployees *
+                    cdf?.WeeksPerMonth *
+                    12 | currency: "USD":"symbol":"1.2-2"
+                }}
+              </td>
+            </tr>
+            <tr>
+              <td style=" font-weight: bold;">
+                Total Crew : {{ bid?.Staff?.length }}
+              </td>
+              <td></td>
+              <td colspan="4"></td>
+            </tr>
+          </tbody>
+        </table>
+        <br />
+        <table>
+          <tbody>
+            <tr>
+              <td colspan="1" style="text-align: left; font-weight: bold;">
+                BASE LABOR COST
+              </td>
+              <td colspan="3"></td>
+              <td style="text-align: right; font-weight: bold;">
+                {{ (totals ? totals.BaseWages : 0) | currency }}
+              </td>
+              <td style="text-align: right; font-weight: bold;">
+                {{ (totals ? totals.BaseWages : 0) * 12 | currency }}
+              </td>
+            </tr>
+
+            <tr
+              *ngFor="let cdfLocationCost of timeOffCosts ? timeOffCosts : []"
+              class="costs"
+            >
+              <td style="text-align: left;">
+                {{ cdfLocationCost.Cost.Name }}
+              </td>
+              <td colspan="3" style="text-align: left;">Bill As Incured</td>
+              <td style="text-align: right;">
+                {{ cdfLocationCost.Total | currency }}
+              </td>
+              <td style="text-align: right;">
+                {{ cdfLocationCost.Total * 12 | currency }}
+              </td>
+            </tr>
+            <tr>
+              <td colspan="4" style="text-align: left; font-weight: bold;">
+                TOTAL LABOR COST
+              </td>
+              <td style="text-align: right; font-weight: bold;">
+                {{ (totals ? totals.TotalLabor : 0) | currency }}
+              </td>
+              <td style="text-align: right; font-weight: bold;">
+                {{ (totals ? totals.TotalLabor : 0) * 12 | currency }}
+              </td>
+            </tr>
+
+            <tr *ngIf="payRollCosts && payRollCosts.length > 0">
+              <td colspan="6" style="text-align: left; font-weight: bold;">
+                PAYROLL RELATED COSTS
+              </td>
+            </tr>
+            <tr
+              *ngFor="let cdfLocationCost of payRollCosts ? payRollCosts : []"
+              class="costs"
+            >
+              <td>{{ cdfLocationCost.Cost.Name }}</td>
+              <td></td>
+              <td>{{ cdfLocationCost.Value }}%</td>
+              <td>{{ cdfLocationCost.Total | currency }}</td>
+              <td>{{ cdfLocationCost.Total * 12 | currency }}</td>
+            </tr>
+
+            <tr *ngIf="payRollAdministration" class="costs">
+              <td style="text-align: left; font-weight: bold;" colspan="3">
+                {{ payRollAdministration?.Cost.Name }}
+              </td>
+              <td style="text-align: left; font-weight: bold;">
+                {{ payRollAdministration?.Value | currency }} PER ENGINEER
+              </td>
+              <td style="text-align: right; font-weight: bold;">
+                {{ payRollAdministration?.Total | currency }}
+              </td>
+              <td style="text-align: right; font-weight: bold;">
+                {{ payRollAdministration?.Total * 12 | currency }}
+              </td>
+            </tr>
+            <tr>
+              <td colspan="4" style="text-align: left; font-weight: bold;">
+                TOTAL TAXES
+              </td>
+              <td style="text-align: right; font-weight: bold;">
+                {{
+                  totals?.TotalPayrollTax + payRollAdministration?.Total
+                    | currency
+                }}
+              </td>
+              <td style="text-align: right; font-weight: bold;">
+                {{
+                  (totals?.TotalPayrollTax + payRollAdministration?.Total) * 12
+                    | currency
+                }}
+              </td>
+            </tr>
+
+            <tr
+              *ngFor="
+                let cdfLocationCost of insuranceCosts ? insuranceCosts : []
+              "
+              class="costs"
+            >
+              <td colspan="3" style="text-align: left;">
+                {{ cdfLocationCost.Cost.Name }}
+              </td>
+              <td style="text-align: right;">{{ cdfLocationCost.Value }}%</td>
+              <td style="text-align: right;">
+                {{ cdfLocationCost.Total | currency }}
+              </td>
+              <td style="text-align: right;">
+                {{ cdfLocationCost.Total * 12 | currency }}
+              </td>
+            </tr>
+            <tr *ngIf="insuranceCosts.length > 0">
+              <td colspan="4" style="text-align: left; font-weight: bold;">
+                TOTAL INSURANCE
+              </td>
+              <td style="text-align: right; font-weight: bold;">
+                {{ totals?.TotalInsurance | currency }}
+              </td>
+              <td style="text-align: right; font-weight: bold;">
+                {{ totals?.TotalInsurance * 12 | currency }}
+              </td>
+            </tr>
+
+            <tr>
+              <td colspan="6" style="text-align: left; font-weight:bold;">
+                BENEFITS
+              </td>
+            </tr>
+            <tr
+              *ngFor="let unionBenefit of unionBenefits ? unionBenefits : []"
+              class="costs"
+            >
+              <td style="text-align: left;">{{ unionBenefit.Type.Value }}</td>
+              <td style="text-align: right;">
+                {{ unionBenefit.Rate | currency: "USD":"symbol":"1.2-5" }}
+              </td>
+              <td></td>
+              <td></td>
+              <td style="text-align: right;">
+                {{
+                  unionBenefit.Contribution * unionBenefit.Staff.NumEmployees
+                    | currency
+                }}
+              </td>
+              <td style="text-align: right;">
+                {{
+                  unionBenefit.Contribution *
+                    unionBenefit.Staff.NumEmployees *
+                    12 | currency
+                }}
+              </td>
+            </tr>
+            <tr
+              *ngFor="
+                let cbmunionBenefit of cbmUnionBenefits ? cbmUnionBenefits : []
+              "
+              class="costs"
+            >
+              <td style="text-align: left;">
+                {{ cbmunionBenefit.BenefitType.Value }}
+              </td>
+              <td style="text-align: right;">
+                {{ cbmunionBenefit.Rate | currency: "USD":"symbol":"1.2-5" }}
+              </td>
+              <td>{{ cbmunionBenefit.CBM_Rate_Type.Value }}</td>
+              <td></td>
+              <td style="text-align: right;">
+                {{
+                  cbmunionBenefit.Contribution *
+                    cbmunionBenefit.Staff.NumEmployees | currency
+                }}
+              </td>
+              <td style="text-align: right;">
+                {{
+                  cbmunionBenefit.Contribution *
+                    cbmunionBenefit.Staff.NumEmployees *
+                    12 | currency
+                }}
+              </td>
+            </tr>
+
+            <tr *ngIf="unionBenefits.length > 0 || cbmUnionBenefits.length > 0">
+              <td style="text-align: left; font-weight:bold;">
+                TOTAL UNION BENEFITS
+              </td>
+              <td colspan="3"></td>
+              <td style="text-align: right; font-weight:bold;">
+                {{ totals?.TotalUnionBenefits | currency }}
+              </td>
+              <td style="text-align: right; font-weight:bold;">
+                {{ totals?.TotalUnionBenefits * 12 | currency }}
+              </td>
+            </tr>
+            <tr
+              *ngFor="
+                let nonunionBenefit of nonUnionBenefits ? nonUnionBenefits : []
+              "
+              class="costs"
+            >
+              <td></td>
+              <td style="text-align: right;">
+                {{ nonunionBenefit.Rate | currency }}
+              </td>
+              <td>
+                {{ nonunionBenefit.NonUnionBenefit.RateType.Value }}
+              </td>
+              <td></td>
+              <td style="text-align: right;">
+                {{
+                  nonunionBenefit.Contribution *
+                    nonunionBenefit.Staff.NumEmployees | currency
+                }}
+              </td>
+              <td style="text-align: right;">
+                {{
+                  nonunionBenefit.Contribution *
+                    nonunionBenefit.Staff.NumEmployees *
+                    12 | currency
+                }}
+              </td>
+            </tr>
+            <tr *ngIf="nonUnionBenefits.length > 0">
+              <td style="text-align: left; font-weight:bold;">
+                TOTAL NON-UNION BENEFITS
+              </td>
+              <td colspan="3"></td>
+              <td style="text-align: right; font-weight:bold;">
+                {{ totals?.TotalNonUnionBenefits | currency }}
+              </td>
+              <td style="text-align: right; font-weight:bold;">
+                {{ totals?.TotalNonUnionBenefits * 12 | currency }}
+              </td>
+            </tr>
+            <tr>
+              <td style="text-align: left; font-weight:bold;">
+                TOTAL PAYROLL RELATED COSTS
+              </td>
+              <td colspan="3"></td>
+              <td style="text-align: right; font-weight:bold;">
+                {{ totals?.TotalPayrollBenefits | currency }}
+              </td>
+              <td style="text-align: right; font-weight:bold;">
+                {{ totals?.TotalPayrollBenefits * 12 | currency }}
+              </td>
+            </tr>
+            <tr>
+              <td style="text-align: left; font-weight:bold;">
+                TOTAL PAYROLL & LABOR COST
+              </td>
+              <td colspan="3"></td>
+              <td style="text-align: right; font-weight:bold;">
+                {{ totals?.TotalPayrollBenefitsCosts | currency }}
+              </td>
+              <td style="text-align: right; font-weight:bold;">
+                {{ totals?.TotalPayrollBenefitsCosts * 12 | currency }}
+              </td>
+            </tr>
+
+            <tr>
+              <td colspan="6" style="text-align: left; font-weight:bold;">
+                OTHER COSTS
+              </td>
+            </tr>
+            <tr
+              *ngFor="let cdfLocationCost of otherCosts ? otherCosts : []"
+              class="costs"
+            >
+              <td style="text-align: left;">
+                {{ cdfLocationCost.Cost.Name }}
+              </td>
+              <td style="text-align: right;">
+                {{ cdfLocationCost.Value | currency: "USD":"symbol":"1.2-5" }}
+              </td>
+              <td>
+                {{ cdfLocationCost.PricingMethod.Value }}
+              </td>
+              <td></td>
+              <td style="text-align: right;">
+                {{ cdfLocationCost.Total | currency }}
+              </td>
+              <td style="text-align: right;">
+                {{ cdfLocationCost.Total * 12 | currency }}
+              </td>
+            </tr>
+            <tr *ngIf="otherCosts.length > 0">
+              <td style="text-align: left; font-weight:bold;">
+                TOTAL OTHER COSTS
+              </td>
+              <td colspan="3"></td>
+              <td style="text-align: right; font-weight:bold;">
+                {{
+                  totals?.TotalOngoingCosts + totals?.TotalRemainingCostItems
+                    | currency
+                }}
+              </td>
+              <td style="text-align: right; font-weight:bold;">
+                {{
+                  (totals?.TotalOngoingCosts +
+                    totals?.TotalRemainingCostItems) *
+                    12 | currency
+                }}
+              </td>
+            </tr>
+            <tr>
+              <td style="text-align: left; font-weight:bold;">
+                TOTAL COST BEFORE FEES
+              </td>
+              <td colspan="3"></td>
+              <td style="text-align: right; font-weight:bold;">
+                {{ totals?.TotalCostsBeforeFees | currency }}
+              </td>
+              <td style="text-align: right; font-weight:bold;">
+                {{ totals?.TotalCostsBeforeFees * 12 | currency }}
+              </td>
+            </tr>
+            <tr>
+              <td colspan="6" style="text-align: left; font-weight:bold;">
+                FEES
+              </td>
+            </tr>
+            <tr *ngFor="let fee of fees ? fees : []" class="costs">
+              <td style="text-align: left;">{{ fee?.Cost.Name }}</td>
+              <td style="text-align: right;">
+                {{ fee?.Value | currency: "USD":"symbol":"1.2-5" }}
+              </td>
+              <td>{{ fee?.PricingMethod.Value }}</td>
+              <td></td>
+              <td style="text-align: right;">{{ fee?.Total | currency }}</td>
+              <td style="text-align: right;">
+                {{ fee?.Total * 12 | currency }}
+              </td>
+            </tr>
+            <tr *ngIf="fees.length > 0">
+              <td style="text-align: left; font-weight:bold;">TOTAL FEES</td>
+              <td colspan="3"></td>
+              <td style="text-align: right; font-weight:bold;">
+                {{ totals?.TotalFees + totals?.TotalFees | currency }}
+              </td>
+              <td style="text-align: right; font-weight:bold;">
+                {{ (totals?.TotalFees + totals?.TotalFees) * 12 | currency }}
+              </td>
+            </tr>
+
+            <tr>
+              <td style="text-align: left; font-weight:bold;">
+                TOTAL MONTHLY PRICE BEFORE TAXES
+              </td>
+              <td colspan="3"></td>
+              <td style="text-align: right; font-weight:bold;">
+                {{ totals?.TotalWithoutTax | currency }}
+              </td>
+              <td style="text-align: right; font-weight:bold;">
+                {{ totals?.TotalWithoutTax * 12 | currency }}
+              </td>
+            </tr>
+
+            <tr *ngFor="let oth of other ? other : []" class="costs">
+              <td style="text-align: left;">{{ oth?.Cost.Name }}</td>
+              <td style="text-align: right;">{{ oth?.Value | currency }}</td>
+              <td>{{ oth?.PricingMethod.Value }}</td>
+              <td></td>
+              <td style="text-align: right;">{{ oth?.Total | currency }}</td>
+              <td style="text-align: right;">
+                {{ oth?.Total * 12 | currency }}
+              </td>
+            </tr>
+            <tr>
+              <td style="text-align: left; font-weight:bold;">
+                TOTAL MONTHLY PRICE
+              </td>
+              <td colspan="3"></td>
+              <td style="text-align: right; font-weight:bold;">
+                {{ totals?.TotalWithTax | currency }}
+              </td>
+              <td style="text-align: right; font-weight:bold;">
+                {{ totals?.TotalWithTax * 12 | currency }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </kendo-pdf-export>
+</div>

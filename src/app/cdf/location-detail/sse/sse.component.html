@@ -1,0 +1,282 @@
+<div fxlayout="column">
+  <mat-card class="mat-elevation-z8">
+    <mat-card-content>
+      <form #sseInputFrm="ngForm">
+        <div fxLayout="row wrap" fxLayoutAlign="start end" fxLayoutGap="5px">
+          <!-- <mat-form-field fxFlex="5%">
+            <mat-select
+              name="sseType"
+              [(ngModel)]="newSSE.SSE_Type"
+              [compareWith]="compareSSE_TypeMethodsFn"
+              placeholder="Type"
+              required
+            >
+              <mat-option *ngFor="let type of SSE_Types" [value]="type">
+                {{ type.Value }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field> -->
+
+          <mat-form-field fxFlex="5%">
+            <mat-select [formControl]="bankCtrl" #singleSelect name="sseType" [(ngModel)]="newSSE.SSE_Type" [compareWith]="compareSSE_TypeMethodsFn"
+              placeholder="Type" required>
+              <mat-option>
+                <ngx-mat-select-search [placeholderLabel]="'Search...'" [formControl]="bankFilterCtrl" [noEntriesFoundLabel]="'Not Found...'">
+                </ngx-mat-select-search>
+              </mat-option>
+
+              <mat-option *ngFor="let type of filteredBanks | async" [value]="type">
+                {{ type.Value }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- <mat-form-field fxFlex="15%">
+            <mat-select
+              name="sseCategory"
+              [(ngModel)]="newSSE.Category"
+              [compareWith]="compareSSE_CategoryMethodsFn"
+              placeholder="Category"
+              required
+            >
+              <mat-option *ngFor="let cat of SSE_Categories" [value]="cat">
+                ({{ cat.Id }}) {{ cat.Name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field> -->
+
+          <mat-form-field fxFlex="15%">
+            <mat-select [formControl]="bankCtrl1" #singleSelect name="sseCategory" [(ngModel)]="newSSE.Category" [compareWith]="compareSSE_CategoryMethodsFn"
+              placeholder="Category" required>
+              <mat-option>
+                <ngx-mat-select-search [formControl]="bankFilterCtrl1" [placeholderLabel]="'Search...'" [noEntriesFoundLabel]="'Not Found...'">
+                </ngx-mat-select-search>
+              </mat-option>
+
+              <mat-option *ngFor="let cat of filteredBanks1 | async" [value]="cat">
+                ({{ cat.Id }}) {{ cat.Name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field fxFlex="15%">
+            <input name="sseVendorName" type="text" matInput placeholder="Vendor Name" [(ngModel)]="newSSE.VendorName" required />
+          </mat-form-field>
+
+          <mat-form-field fxFlex="15%">
+            <input name="sseDescription" type="text" matInput placeholder="Description" [(ngModel)]="newSSE.Description" required />
+          </mat-form-field>
+
+          <mat-form-field fxFlex="8%">
+            <mat-select name="sseContractType" [(ngModel)]="newSSE.ContractType" [compareWith]="compareContractTypesFn" placeholder="Contract Type"
+              required>
+              <mat-option *ngFor="let type of ContractTypes" [value]="type">
+                {{ type.Value }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field fxFlex="8%">
+            <mat-select name="ssePricingMethod" [(ngModel)]="newSSE.PricingMethod" [compareWith]="comparePricingMethodsFn" placeholder="Pricing Method"
+              (selectionChange)="calculateCost(newSSE)" required>
+              <mat-option *ngFor="let Method of getPricingMethods()" [value]="Method">
+                {{ Method.Value }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field fxFlex="5%">
+            <input matInput type="number" name="Value" [(ngModel)]="newSSE.Value" class="center" placeholder="Value" (change)="calculateCost(newSSE)"
+              required />
+          </mat-form-field>
+
+          <mat-form-field fxFlex="5%">
+            <input matInput type="number" name="MarkUp" [(ngModel)]="newSSE.Markup" class="center" placeholder="Mark Up" (change)="calculateCost(newSSE)"
+            />
+          </mat-form-field>
+
+          <mat-form-field fxFlex="6%">
+            <input name="FromDate" matInput [matDatepicker]="FromDate" placeholder="Starting Date" [(ngModel)]="newSSE.FromDate" (change)="calculateCost(newSSE)"
+              required />
+            <mat-datepicker-toggle matSuffix [for]="FromDate"></mat-datepicker-toggle>
+            <mat-datepicker #FromDate [startAt]="ContractStartDate" (change)="calculateCost(newSSE)"></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field fxFlex="6%">
+            <input name="ToDate" matInput [matDatepicker]="ToDate" placeholder="Ending Date" [(ngModel)]="newSSE.ToDate" (change)="calculateCost(newSSE)"
+              required />
+            <mat-datepicker-toggle matSuffix [for]="ToDate">
+            </mat-datepicker-toggle>
+            <mat-datepicker #ToDate [startAt]="ContractEndDate" (change)="calculateCost(newSSE)"></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field fxFlex="5%">
+            <input matInput type="number" name="MonthlyValue" [(ngModel)]="newSSE.MonthlyValue" class="center" placeholder="Monthly Value"
+              readonly />
+          </mat-form-field>
+
+          <button id="btnAddSSE" name="btnAddSSE" mat-raised-button color="accent" fxFlex="4%" (click)="addSSE(newSSE)" [disabled]="savingNewSSE || !sseInputFrm.form.valid">
+            <mat-icon *ngIf="!savingNewSSE" aria-label="label">add</mat-icon>
+            <mat-icon *ngIf="savingNewSSE">
+              <mat-spinner color="primary" diameter="20"></mat-spinner>
+            </mat-icon>
+          </button>
+        </div>
+      </form>
+
+      <div>
+        <div *ngFor="
+            let item of location.SSEs
+              | orderBy: 'SSE_Type.Id'
+              | groupBy: 'SSE_Type.Value'
+              | pairs;
+            index as i
+          " fxLayout="column" fxLayoutAlign="start start" fxFlexFill>
+          <h2>{{ item[0] }}</h2>
+
+          <mat-table [dataSource]="item[1]" fxFill>
+            <ng-container matColumnDef="Type">
+              <mat-header-cell *matHeaderCellDef>
+                Type
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <mat-form-field>
+                  <mat-select name="{{ i }}_sseType_{{ element.Id }}" [(ngModel)]="element.SSE_Type" [compareWith]="compareSSE_TypeMethodsFn">
+                    <mat-option *ngFor="let type of SSE_Types" [value]="type">
+                      {{ type.Value }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="Category">
+              <mat-header-cell *matHeaderCellDef>
+                Category
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <mat-form-field>
+                  <mat-select name="{{ i }}_sseCategory_{{ element.Id }}" [(ngModel)]="element.Category" [compareWith]="compareSSE_CategoryMethodsFn">
+                    <mat-option *ngFor="let cat of SSE_Categories" [value]="cat">
+                      ({{ cat.Id }}) {{ cat.Name }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="Vendor">
+              <mat-header-cell *matHeaderCellDef>
+                Vendor
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <mat-form-field>
+                  <input name="{{ i }}_sseVendorName_{{ element.Id }}" type="text" matInput [(ngModel)]="element.VendorName" />
+                </mat-form-field>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="Description">
+              <mat-header-cell *matHeaderCellDef>
+                Description
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <mat-form-field>
+                  <input name="{{ i }}_sseDescription_{{ element.Id }}" type="text" matInput [(ngModel)]="element.Description" />
+                </mat-form-field>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="ContractType">
+              <mat-header-cell *matHeaderCellDef>
+                Contract Type
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <mat-form-field>
+                  <mat-select name="{{ i }}_sseContractType_{{ element.Id }}" [(ngModel)]="element.ContractType" [compareWith]="compareContractTypesFn">
+                    <mat-option *ngFor="let type of ContractTypes" [value]="type">
+                      {{ type.Value }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="PricingMethod">
+              <mat-header-cell *matHeaderCellDef>
+                Pricing Method
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <mat-form-field>
+                  <mat-select name="{{ i }}_ssePricingMethod_{{ element.Id }}" [(ngModel)]="element.PricingMethod" [compareWith]="comparePricingMethodsFn"
+                    (selectionChange)="calculateCost(element)">
+                    <mat-option *ngFor="let Method of getPricingMethods()" [value]="Method">
+                      {{ Method.Value }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="Value">
+              <mat-header-cell *matHeaderCellDef>
+                Value
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <mat-form-field>
+                  <input matInput type="number" name="{{ i }}_Value_{{ element.Id }}" [(ngModel)]="element.Value" class="center" (change)="calculateCost(element)"
+                  />
+                </mat-form-field>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="MarkUp">
+              <mat-header-cell *matHeaderCellDef>
+                Mark Up
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <mat-form-field>
+                  <input matInput type="number" name="{{ i }}_MarkUp_{{ element.Id }}" [(ngModel)]="element.Markup" class="center" (change)="calculateCost(element)"
+                  />
+                </mat-form-field>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="StartDate">
+              <mat-header-cell *matHeaderCellDef>
+                Start Date
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <mat-form-field>
+                  <input name="{{ i }}_FromDate_{{ element.Id }}" matInput [matDatepicker]="FromDate" [(ngModel)]="element.FromDate" (change)="calculateCost(element)"
+                  />
+                  <mat-datepicker-toggle matSuffix [for]="FromDate"></mat-datepicker-toggle>
+                  <mat-datepicker #FromDate [startAt]="ContractStartDate"></mat-datepicker>
+                </mat-form-field>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="EndDate">
+              <mat-header-cell *matHeaderCellDef>
+                End Date
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <mat-form-field>
+                  <input name="{{ i }}_ToDate_{{ element.Id }}" matInput [matDatepicker]="ToDate" [(ngModel)]="element.ToDate" (change)="calculateCost(element)"
+                  />
+                  <mat-datepicker-toggle matSuffix [for]="ToDate">
+                  </mat-datepicker-toggle>
+                  <mat-datepicker #ToDate [startAt]="ContractEndDate"></mat-datepicker>
+                </mat-form-field>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="MonthlyValue">
+              <mat-header-cell *matHeaderCellDef>
+                Monthly Value
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <mat-form-field>
+                  <input matInput type="number" name="{{ i }}_MonthlyValue_{{ element.Id }}" [(ngModel)]="element.MonthlyValue" class="center"
+                    readonly />
+                </mat-form-field>
+              </mat-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+          </mat-table>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -1,0 +1,27 @@
+<div [formGroup]="formGroup">
+  <div style="margin-bottom:15px;" formArrayName="NonUnion_Benefits" *ngFor="let benefit of NonUnion_Benefits.controls; let i= index;">
+    <div [formGroupName]="i" fxLayout="row" fxLayoutGap="5px" fxLayoutAlign="start end">
+
+      <mat-form-field fxFlex="15%">
+        <input formControlName="Code" matInput placeholder="Code" readonly>
+      </mat-form-field>
+
+      <mat-form-field fxFlex="10%">
+        <input formControlName="Rate" matInput placeholder="Rate" type="number" (change)="update_NonUnion_Contribution(benefit,i)"
+          [readonly]="!NonUnion_Benefits.controls[i].controls.Override.value">
+      </mat-form-field>
+
+      <mat-form-field>
+        <input formControlName="RateType" matInput placeholder="Rate Type" type="text" readonly>
+      </mat-form-field>
+
+      <mat-form-field fxFlex="10%">
+        <input formControlName="Contribution" matInput placeholder="Total" readonly>
+      </mat-form-field>
+
+      <div style="margin-left: 10px;padding-bottom: 20px;" fxFlex="10%">
+        <mat-checkbox formControlName="Override" (change)="toggleNonUnion_Override($event, benefit, i)">Override</mat-checkbox>
+      </div>
+    </div>
+  </div>
+</div>

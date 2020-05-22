@@ -1,0 +1,31 @@
+<div fxLayout="column" fxFlexFill fxLayoutAlign="center center">
+  <img id="logo" src="src/assets/AbleServices_Logo.png" alt="Logo" height="250">
+  <div fxLayout="row" class="full-width" fxLayoutAlign="center center">
+    <form #frmLogin="ngForm"
+      (ngSubmit)="OnSubmit(userName.value,password.value)" fxFlex="30"
+      fxFlex.lt-lg="75" fxFlex.gt-lg="20">
+      <mat-card class="mat-elevation-z8">
+        <mat-card-title>
+          Create New Account
+        </mat-card-title>
+        <mat-card-content>
+          <div fxLayout="column">
+            <mat-form-field>
+              <input matInput placeholder="Email">
+            </mat-form-field>
+            <mat-form-field>
+              <input matInput placeholder="Password" type="password">
+            </mat-form-field>
+            <mat-form-field>
+              <input matInput placeholder="Confirm Password" type="password">
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+        <mat-card-actions fxLayoutAlign="center start">
+          <button mat-raised-button color="accent">Create Account</button>
+          <a mat-raised-button color="accent" [routerLink]="['/login']">Return to Login</a>
+        </mat-card-actions>
+      </mat-card>
+    </form>
+  </div>
+</div>

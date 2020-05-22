@@ -1,0 +1,54 @@
+<div class="title">Location Tax Summary</div>
+<hr>
+<br><br>
+<div [formGroup]="formGroup" fx>
+  <div formArrayName="taxes">
+    <div style="margin-bottom:15px;" *ngFor="let tax of taxes.controls; let i=index" fxLayout="column">
+      <div [formGroupName]="i" fxLayout="row" fxLayoutAlign="start start" fxFlexFill>
+
+        <mat-form-field fxFlex *ngIf="!taxes.controls[i].controls.Override.value">
+          <input formControlName="Type" matInput placeholder="Type"
+            [value]="taxes.controls[i].controls.Type.value.Value" readonly>
+        </mat-form-field>
+
+        <mat-form-field fxFlex *ngIf="taxes.controls[i].controls.Override.value">
+          <mat-select placeholder="Tax Type" formControlName="Type" [compareWith]="compareTaxTypeFn" required>
+            <mat-option *ngFor="let item of taxTypes" [value]="item">
+              {{item.Value}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field fxFlex="10%">
+          <input formControlName="Rate" type="number" matInput placeholder="Rate" (change)="calculateTaxAmount(tax,i)" required
+            [readonly]='!taxes.controls[i].controls.Override.value'>
+        </mat-form-field>
+
+        <mat-form-field fxFlex="10%" *ngIf="stopFlag">
+          <input formControlName="Limit" type="number" matInput placeholder="Limit" (change)="calculateTaxAmount(tax,i)"
+            [readonly]='!taxes.controls[i].controls.Override.value'>
+        </mat-form-field>
+
+        <mat-form-field fxFlex="10%">
+          <input formControlName="EffectiveDate" name="EffectiveDate" matInput [matDatepicker]="EffectiveDate" placeholder="EffectiveDate" readonly>
+          <mat-datepicker-toggle matSuffix [for]="EffectiveDate" [disabled]='!taxes.controls[i].controls.Override.value'></mat-datepicker-toggle>
+          <mat-datepicker #EffectiveDate></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field fxFlex="10%">
+          <input formControlName="Amount" matInput #Amount placeholder="Amount" readonly
+            [value]="taxes.controls[i].controls.Amount.value | currency">
+        </mat-form-field>
+
+        <div style="margin-left: 10px;padding-bottom: 20px;" fxFlex="10%">
+          <mat-checkbox formControlName="Override" (change)="toggleTax_Override($event, tax, i)" [disabled]="taxes.controls[i].controls.Added.value">Override</mat-checkbox>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div fxLayout="row wrap" fxLayoutAlign="end" fxLayoutGap="10px">
+    <button mat-fab (click)="AddNewTax()" color="accent" [disabled]="!formGroup.valid"><mat-icon>add</mat-icon></button>
+    <button mat-fab (click)="cancel()" color="primary"><mat-icon>cancel</mat-icon></button>
+    <button mat-fab (click)="submit()" color="accent" [disabled]="!formGroup.valid"><mat-icon>check</mat-icon></button>
+  </div>
+</div>

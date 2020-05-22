@@ -1,0 +1,84 @@
+<form [formGroup]="createForm">
+  <h2 mat-dialog-title>Add New Cost</h2>
+  <mat-dialog-content>
+    <div fxLayout="row wrap" fxLayoutAlign="space-between end">
+      <mat-form-field fxFlex="100%">
+        <mat-label>Cost Type</mat-label>
+        <mat-select formControlName="CostType" required>
+          <mat-option *ngFor="let type of costTypes" [value]="type">{{type.Value}}</mat-option>
+        </mat-select>
+        <mat-error [hidden]="!createForm.controls['Cost'].hasError('required') || createForm.controls['Cost'].untouched">
+          Cost type is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+
+
+      <mat-form-field fxFlex="100%">
+        <mat-label>Cost</mat-label>
+        <mat-select formControlName="Cost" required>
+          <mat-option *ngFor="let cost of createForm.controls['CostType'].value.Costs" [value]="cost">{{cost.Name}}</mat-option>
+        </mat-select>
+        <mat-error [hidden]="!createForm.controls['Cost'].hasError('required') || createForm.controls['Cost'].untouched">
+          Cost is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field fxFlex="100%">
+        <mat-label>Pricing Method</mat-label>
+        <mat-select formControlName="PricingMethod" required>
+          <mat-option *ngFor="let method of pricingMethods | pricingMethodFilter: createForm.controls['Cost'].value" [value]="method">{{method.Value}}</mat-option>
+        </mat-select>
+        <mat-error [hidden]="!createForm.controls['Cost'].hasError('required') || createForm.controls['Cost'].untouched">
+          Pricing Method is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field fxFlex="45%">
+        <input
+          name="FromDate"
+          matInput
+          [matDatepicker]="FromDate"
+          placeholder="Choose Starting Date"
+          formControlName="FromDate"
+          />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="FromDate"></mat-datepicker-toggle>
+        <mat-datepicker #FromDate [startAt]="data.ContractStartDate"></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field fxFlex="45%">
+        <input
+          name="ToDate"
+          matInput
+          [matDatepicker]="ToDate"
+          placeholder="Choose Ending Date"
+          formControlName="ToDate" />
+        <mat-datepicker-toggle matSuffix [for]="ToDate"></mat-datepicker-toggle>
+        <mat-datepicker #ToDate [startAt]="data.ContractEndDate"></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field fxFlex="45%">
+        <input name="Value"
+          matInput
+          placeholder="Value"
+          type="number"
+          formControlName="Value"
+          required/>
+
+        <mat-error [hidden]="!createForm.controls['Value'].hasError('required') || createForm.controls['Value'].untouched">
+          Value is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions fxLayoutAlign="end center" fxLayoutGap="10px">
+    <button mat-stroked-button mat-dialog-close color="warn">
+      <mat-icon>cancel</mat-icon>
+    </button>
+    <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
+    <button mat-stroked-button [mat-dialog-close]="onClose()" color="accent" [disabled]="createForm.invalid">
+      <mat-icon>add</mat-icon>
+    </button>
+  </mat-dialog-actions>
+</form>

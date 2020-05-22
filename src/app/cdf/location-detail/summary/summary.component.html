@@ -1,0 +1,457 @@
+<mat-card class="mat-elevation-z8" style="margin-left:25px;margin-right:20px;">
+  <mat-card-title>
+    Bid Summary
+    <button mat-fab (click)="refresh()" color="primary">
+      <mat-icon>refresh</mat-icon>
+    </button>
+  </mat-card-title>
+ 
+  <mat-divider></mat-divider>
+  <mat-card-content>
+    <div
+      fxLayout="row wrap"
+      fxLayoutAlign="start start"
+      fxLayoutGap="15px"
+      fxFlexFill
+    >
+      <table fxFlex.gt-lg="35%" fxFlex.md="40%" fxFlex="100%">
+        <thead>
+          <tr class="mat-header-row">
+            <th class="mat-header-cell"></th>
+            <th class="mat-header-cell" style="text-align: right;">
+              Value
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            class="mat-row"
+            *ngIf="
+              location.LOS.CBM_Unions && location.LOS.CBM_Unions.length > 0
+            "
+          >
+            <td class="mat-cell">
+              Productivity Sq.Ft. Rate
+            </td>
+            <td class="mat-cell" style="text-align: right;">
+              {{
+                calculateBuildingProductivityRate()
+                  | currency: "USD":"symbol":"1.2-2"
+              }}
+            </td>
+          </tr>
+          <tr class="mat-row">
+            <td class="mat-cell">
+              Monthly Cost PSF
+            </td>
+            <td class="mat-cell" style="text-align: right;">
+              {{ calculateMonthlyCostPSF() | currency: "USD":"symbol":"1.2-2" }}
+            </td>
+          </tr>
+          <tr class="mat-row">
+            <td class="mat-cell">
+              Vacancy Credit PSF
+            </td>
+            <td class="mat-cell" style="text-align: right;">
+              {{ calculateVacancyCredit() | currency }}
+            </td>
+          </tr>
+          <tr class="mat-row">
+            <td class="mat-cell">
+              Current Vacancy Credit
+            </td>
+            <td class="mat-cell" style="text-align: right;">
+              {{ 0 | currency }}
+            </td>
+          </tr>
+          <tr class="mat-row">
+            <td class="mat-cell">
+              Current Monthly Cost
+            </td>
+            <td class="mat-cell" style="text-align: right;">
+              {{ 0 | currency }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <table fxFlex>
+        <thead>
+          <tr class="mat-header-row">
+            <th class="mat-header-cell"></th>
+            <th
+              class="mat-header-cell"
+              style="width:10%; text-align: center;"
+            ></th>
+            <th class="mat-header-cell" style="width:10%;">
+              Monthly
+            </th>
+            <th class="mat-header-cell" style="width:10%;">
+              Yearly
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="mat-row">
+            <td class="mat-cell">
+              Total Base Labor
+            </td>
+            <td class="mat-cell" style="width:10%;"></td>
+            <td class="mat-cell" style="width:10%;">
+              {{
+                (location.Summary ? location.Summary.BaseWages : 0) | currency
+              }}
+            </td>
+            <td class="mat-cell" style="width:10%;">
+              {{
+                (location.Summary ? location.Summary.BaseWages : 0) * 12
+                  | currency
+              }}
+            </td>
+          </tr>
+          <tr class="mat-row">
+            <td class="mat-cell">
+              Total Labor
+            </td>
+            <td class="mat-cell" style="width:10%;"></td>
+            <td class="mat-cell" style="width:10%;">
+              {{
+                (location.Summary ? location.Summary.TotalLabor : 0) | currency
+              }}
+            </td>
+            <td class="mat-cell" style="width:10%;">
+              {{
+                (location.Summary ? location.Summary.TotalLabor : 0) * 12
+                  | currency
+              }}
+            </td>
+          </tr>
+          <tr class="mat-row">
+            <td class="mat-cell">
+              Total Payroll Taxes
+
+              <button
+                mat-icon-button
+                (click)="openTaxesBottomSheet()"
+                color="primary"
+                matTooltip="Tax Information"
+                *ngIf="location.Location?.ZipCode"
+              >
+                <mat-icon aria-label="Tax Information">help_outline</mat-icon>
+              </button>
+            </td>
+            <td class="mat-cell" style="text-align: center;"></td>
+            <td class="mat-cell">
+              {{
+                (location.Summary ? location.Summary.TotalPayrollTax : 0)
+                  | currency
+              }}
+            </td>
+            <td class="mat-cell">
+              {{
+                (location.Summary ? location.Summary.TotalPayrollTax : 0) * 12
+                  | currency
+              }}
+            </td>
+          </tr>
+          <tr class="mat-row">
+            <td class="mat-cell">
+              Total Insurance
+            </td>
+            <td class="mat-cell" style="text-align: center;"></td>
+            <td class="mat-cell">
+              {{
+                (location.Summary ? location.Summary.TotalInsurance : 0)
+                  | currency
+              }}
+            </td>
+            <td class="mat-cell">
+              {{
+                (location.Summary ? location.Summary.TotalInsurance : 0) * 12
+                  | currency
+              }}
+            </td>
+          </tr>
+          <tr class="mat-row">
+            <td class="mat-cell">
+              Payroll Processing
+            </td>
+            <td class="mat-cell" style="text-align: center;"></td>
+            <td class="mat-cell">
+              {{
+                (location.Summary
+                  ? location.Summary.TotalPayrollProcessing
+                  : 0
+                ) | currency
+              }}
+            </td>
+            <td class="mat-cell">
+              {{
+                (location.Summary
+                  ? location.Summary.TotalPayrollProcessing
+                  : 0) * 12 | currency
+              }}
+            </td>
+          </tr>
+
+          <tr class="mat-row">
+            <td class="mat-cell">
+              Total Union Benefits
+            </td>
+            <td class="mat-cell" style="text-align: center;"></td>
+            <td class="mat-cell">
+              {{
+                (location.Summary ? location.Summary.TotalUnionBenefits : 0)
+                  | currency
+              }}
+            </td>
+            <td class="mat-cell">
+              {{
+                (location.Summary ? location.Summary.TotalUnionBenefits : 0) *
+                  12 | currency
+              }}
+            </td>
+          </tr>
+          <tr class="mat-row">
+            <td class="mat-cell">
+              Total Non-Union Benefits
+            </td>
+            <td class="mat-cell" style="text-align: center;"></td>
+            <td class="mat-cell">
+              {{
+                (location.Summary ? location.Summary.TotalNonUnionBenefits : 0)
+                  | currency
+              }}
+            </td>
+            <td class="mat-cell">
+              {{
+                (location.Summary
+                  ? location.Summary.TotalNonUnionBenefits
+                  : 0) * 12 | currency
+              }}
+            </td>
+          </tr>
+          <tr class="mat-row">
+            <td class="mat-cell">
+              Total Ongoing Costs
+            </td>
+            <td class="mat-cell" style="text-align: center;"></td>
+            <td class="mat-cell">
+              {{
+                (location.Summary ? location.Summary.TotalOngoingCosts : 0)
+                  | currency
+              }}
+            </td>
+            <td class="mat-cell">
+              {{
+                (location.Summary ? location.Summary.TotalOngoingCosts : 0) *
+                  12 | currency
+              }}
+            </td>
+          </tr>
+          <tr class="mat-row">
+            <td class="mat-cell">
+              Remaining Cost Items
+            </td>
+            <td class="mat-cell" style="text-align: center;"></td>
+            <td class="mat-cell">
+              {{
+                (location.Summary
+                  ? location.Summary.TotalRemainingCostItems
+                  : 0
+                ) | currency
+              }}
+            </td>
+            <td class="mat-cell">
+              {{
+                (location.Summary
+                  ? location.Summary.TotalRemainingCostItems
+                  : 0) * 12 | currency
+              }}
+            </td>
+          </tr>
+          <tr class="mat-row">
+            <td class="mat-cell">
+              Costs before Fees
+            </td>
+            <td class="mat-cell" style="text-align: center;"></td>
+            <td class="mat-cell">
+              {{
+                (location.Summary ? location.Summary.TotalCostsBeforeFees : 0)
+                  | currency
+              }}
+            </td>
+            <td class="mat-cell">
+              {{
+                (location.Summary ? location.Summary.TotalCostsBeforeFees : 0) *
+                  12 | currency
+              }}
+            </td>
+          </tr>
+          <tr class="mat-row">
+            <td class="mat-cell">
+              Total Fees
+            </td>
+            <td class="mat-cell" style="text-align: center;"></td>
+            <td class="mat-cell">
+              {{
+                (location.Summary ? location.Summary.TotalFees : 0) | currency
+              }}
+            </td>
+            <td class="mat-cell">
+              {{
+                (location.Summary ? location.Summary.TotalFees : 0) * 12
+                  | currency
+              }}
+            </td>
+          </tr>
+          <tr class="mat-row">
+            <td class="mat-cell">
+              Total Discount
+            </td>
+            <td class="mat-cell" style="text-align: center;"></td>
+            <td class="mat-cell">
+              {{
+                (location.Summary ? location.Summary.TotalDiscount : 0)
+                  | currency
+              }}
+            </td>
+            <td class="mat-cell">
+              {{
+                (location.Summary ? location.Summary.TotalDiscount : 0) * 12
+                  | currency
+              }}
+            </td>
+          </tr>
+          <tr class="mat-row">
+            <td class="mat-cell">
+              Subtotal
+            </td>
+            <td class="mat-cell" style="text-align: center;"></td>
+            <td class="mat-cell">
+              {{
+                (location.Summary ? location.Summary.TotalWithoutTax : 0)
+                  | currency
+              }}
+            </td>
+            <td class="mat-cell">
+              {{
+                (location.Summary ? location.Summary.TotalWithoutTax : 0) * 12
+                  | currency
+              }}
+            </td>
+          </tr>
+          <tr class="mat-row">
+            <td class="mat-cell">
+              Sales/GRT Tax
+              <button
+                mat-icon-button
+                (click)="openTaxesBottomSheet()"
+                color="primary"
+                matTooltip="Tax Information"
+                *ngIf="location.Location?.ZipCode"
+              >
+                <mat-icon aria-label="Tax Information">help_outline</mat-icon>
+              </button>
+            </td>
+            <td class="mat-cell" style="text-align: center;"></td>
+            <td class="mat-cell">
+              {{
+                (location.Summary ? location.Summary.TotalTax : 0) | currency
+              }}
+            </td>
+            <td class="mat-cell">
+              {{
+                (location.Summary ? location.Summary.TotalTax : 0) * 12
+                  | currency
+              }}
+            </td>
+          </tr>
+          <tr class="mat-row">
+            <td class="mat-cell">
+              Total w/ Tax
+            </td>
+            <td class="mat-cell" style="text-align: center;"></td>
+            <td class="mat-cell">
+              {{
+                (location.Summary ? location.Summary.TotalWithTax : 0)
+                  | currency
+              }}
+            </td>
+            <td class="mat-cell">
+              {{
+                (location.Summary ? location.Summary.TotalWithTax : 0) * 12
+                  | currency
+              }}
+            </td>
+          </tr>
+          <tr class="mat-row">
+            <td class="mat-cell">
+              Total Gross Profit
+            </td>
+            <td class="mat-cell" style="text-align: center;"></td>
+            <td class="mat-cell">
+              {{ locService.calculateGrossProfit(location) | currency }}
+            </td>
+            <td class="mat-cell">
+              {{ locService.calculateGrossProfit(location) * 12 | currency }}
+            </td>
+          </tr>
+        </tbody>
+        <!-- <tfoot>
+          <tr class="mat-footer-row">
+            <td class="mat-footer-cell">
+              <strong>TOTAL COST AT 100% OCCUPANCY</strong>
+            </td>
+            <td class="mat-footer-cell" style="width:10%;"></td>
+            <td class="mat-footer-cell" style="width:10%;">
+              <strong>
+                {{0 | currency}}
+              </strong>
+            </td>
+            <td class="mat-footer-cell" style="width:10%;">
+              <strong>
+                {{0 * 12 | currency}}
+              </strong>
+            </td>
+          </tr>
+          <tr class="mat-footer-row">
+            <td class="mat-footer-cell">
+              <strong>TAX</strong>
+              <button mat-icon-button (click)="openTaxesBottomSheet()" color="primary"
+                matTooltip="Tax Information" *ngIf="location.Location?.ZipCode">
+                <mat-icon aria-label="Tax Information">help_outline</mat-icon>
+              </button>
+            </td>
+            <td class="mat-footer-cell" style="width:10%; text-align: center;">
+            </td>
+            <td class="mat-footer-cell" style="width:10%;">
+              <strong>
+                {{0 | currency}}
+              </strong>
+            </td>
+            <td class="mat-footer-cell" style="width:10%;">
+              <strong>
+                {{0 * 12 | currency}}
+              </strong>
+            </td>
+          </tr>
+          <tr class="mat-footer-row">
+            <td class="mat-footer-cell"></td>
+            <td class="mat-footer-cell" style="width:10%;"></td>
+            <td class="mat-footer-cell" style="width:10%;">
+              <strong>
+                {{(0 | currency)}}
+              </strong>
+            </td>
+            <td class="mat-footer-cell" style="width:10%;">
+              <strong>
+                {{(0 * 12 | currency)}}
+              </strong>
+            </td>
+          </tr>
+        </tfoot> -->
+      </table>
+    </div>
+  </mat-card-content>
+</mat-card>

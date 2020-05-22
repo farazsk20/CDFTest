@@ -1,0 +1,69 @@
+
+<div fxLayout="row" fxLayout="row" fxLayoutGap="5px" fxLayoutAlign="end end">
+  <button mat-stroked-button color="accent" (click)="add_AES_Rate()">Add Rate</button>
+</div>
+<div [formGroup]="formGroup">
+
+  <div style="margin-bottom:15px;" formArrayName="AES_Benefits" *ngFor="let benefit of AES_Benefits.controls; let i=index;">
+
+    <div [formGroupName]="i" fxLayout="row" fxLayoutGap="5px" fxLayoutAlign="center end" [ngClass]="{'active':staff.AES_Benefits[i].Active}">
+      <mat-form-field fxFlex="15%" *ngIf="!AES_Benefits.controls[i].controls.Override.value">
+        <input formControlName="BenefitType" matInput placeholder="Type"
+          [value]="AES_Benefits.controls[i].controls.BenefitType.value.Value">
+      </mat-form-field>
+
+      <mat-form-field fxFlex="15%" *ngIf="AES_Benefits.controls[i].controls.Override.value">
+        <mat-select placeholder="Benefit Type" formControlName="BenefitType" [compareWith]="compareBenefitTypeFn"
+          (selectionChange)="update_AES_Contribution(benefit.controls,i)" required>
+          <mat-option *ngFor="let item of benefitTypes" [value]="item">
+            {{item.Value}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field fxFlex="10%">
+        <input formControlName="Rate" matInput placeholder="Rate" type="number"
+          [readonly]="!AES_Benefits.controls[i].controls.Override.value"
+          (change)="update_AES_Contribution(benefit.controls,i)">
+      </mat-form-field>
+
+      <mat-form-field fxFlex="10%" *ngIf="!AES_Benefits.controls[i].controls.Override.value">
+        <input formControlName="RateType" matInput placeholder="Rate Type" type="text"
+          [value]="AES_Benefits.controls[i].controls.RateType.value.Value" readonly>
+      </mat-form-field>
+
+      <mat-form-field fxFlex="10%" *ngIf="AES_Benefits.controls[i].controls.Override.value">
+        <mat-select placeholder="Rate Type" formControlName="RateType" [compareWith]="comparePricingMethodFn"
+          (selectionChange)="update_AES_Contribution(benefit.controls,i)" required>
+          <mat-option *ngFor="let item of pricingMethods" [value]="item">
+            {{item.Value}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field fxFlex="10%">
+        <input formControlName="Contribution" matInput placeholder="Total" readonly>
+      </mat-form-field>
+
+      <mat-form-field fxFlex="15%">
+        <input formControlName="EffectiveDate" name="EffectiveDate" matInput [matDatepicker]="EffectiveDate" placeholder="EffectiveDate"
+          readonly>
+        <mat-datepicker-toggle matSuffix [for]="EffectiveDate"
+          [disabled]="!AES_Benefits.controls[i].controls.Override.value"></mat-datepicker-toggle>
+        <mat-datepicker #EffectiveDate></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field fxFlex="15%">
+        <input formControlName="ExpirationDate" name="ExpirationDate" matInput [matDatepicker]="ExpirationDate" placeholder="ExpirationDate"
+          readonly>
+        <mat-datepicker-toggle matSuffix [for]="ExpirationDate"
+          [disabled]="!AES_Benefits.controls[i].controls.Override.value"></mat-datepicker-toggle>
+        <mat-datepicker #ExpirationDate></mat-datepicker>
+      </mat-form-field>
+
+      <div style="margin-left: 10px;padding-bottom: 20px;" fxFlex="10%">
+        <mat-checkbox formControlName="Override" (change)="toggleAES_Override($event)">Override</mat-checkbox>
+      </div>
+    </div>
+  </div>
+</div>

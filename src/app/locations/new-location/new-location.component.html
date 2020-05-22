@@ -1,0 +1,124 @@
+<div fxLayout="row" fxLayoutAlign="center start" fxFlexFill>
+  <div fxFlex="60%" fxFlex.lt-lg="95%" fxLayout="column" fxFlexFill fxLayoutAlign="start stretch" fxLayoutGap="10px">
+    <div style="text-align: center;">
+      <h1>Add New Location</h1>
+    </div>
+    <div [formGroup]="formGroup">
+      <div fxLayout="column" fxLayoutAlign="start start">
+        <div fxFlexFill fxLayout="row" fxLayoutAlign="start start" fxLayoutGap="5px">
+          <mat-form-field fxFlex>
+            <input formControlName="Name" matInput placeholder="Name" id="Name" required [readonly]="readOnly">
+            <mat-error [hidden]="!Name.hasError('required')">
+              * Required
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div fxFlexFill fxLayout="row" fxLayoutAlign="start start" fxLayoutGap="5px">
+          <mat-form-field fxFlex>
+            <input formControlName="Address" matInput placeholder="Address" id="Address" required [readonly]="readOnly">
+            <mat-error [hidden]="!Address.hasError('required')">
+              * Required
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field fxFlex>
+            <input formControlName="Address2" matInput placeholder="Address 2" id="Address2"  [readonly]="readOnly">
+            
+          </mat-form-field>
+
+          <mat-form-field fxFlex>
+            <input formControlName="City" matInput placeholder="City" id="City" required [readonly]="readOnly">
+            <mat-error [hidden]="!City.hasError('required')">
+              * Required
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field fxFlex>
+            <mat-select placeholder="State" formControlName="State" id="State" required [disabled]="readOnly">
+              <mat-option *ngFor="let state of states" [value]="state.code" >
+                {{state.name}}
+              </mat-option>
+            </mat-select>
+            <mat-error [hidden]="!State.hasError('required')">
+              * Required
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field fxFlex>
+            <input formControlName="ZipCode" matInput placeholder="Zip Code" id="ZipCode" required [readonly]="readOnly">
+            <mat-hint>Zip Code must be 5 digits in length.</mat-hint>
+            <mat-error [hidden]="!ZipCode.hasError('minLength') && !ZipCode.hasError('maxLength')">
+              Zip Code must be 5 digits in length.
+            </mat-error>
+            <mat-error [hidden]="!ZipCode.hasError('required')">
+              * Required
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div fxFlexFill fxLayout="row" fxLayoutGap="5px">
+
+          <mat-form-field fxFlex>
+              <mat-select placeholder="Region" formControlName="Region" [compareWith]="compareRegionFn" id="Region" required [disabled] = "readOnly">
+              <mat-option *ngFor="let item of regions" [value]="item">
+                {{item.Name}}
+              </mat-option>
+            </mat-select>
+            <mat-error [hidden]="!Region.hasError('required')">
+              * Required
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field fxFlex>
+            <mat-select placeholder="Property Type" formControlName="PropertyType" [compareWith]="comparePropertyTypeFn" id="PropertyType" required [disabled]="readOnly" >
+              <mat-option *ngFor="let item of propertyTypes" [value]="item">
+                {{item.Name}}
+              </mat-option>
+            </mat-select>
+            <mat-error [hidden]="!PropertyType.hasError('required')">
+              * Required
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div fxFlexFill fxLayout="row" fxLayoutGap="5px">
+
+          <mat-form-field fxFlex>
+            <input type="number" formControlName="BuildSqFt" matInput placeholder="Building SqFt" id="BuildSqFt" required>
+            <mat-error [hidden]="!BuildSqFt.hasError('required')">
+              * Required
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field fxFlex>
+            <input type="number" formControlName="RentableSqFt" matInput placeholder="Rentable SqFt">
+          </mat-form-field>
+          <mat-form-field fxFlex>
+            <input type="number" formControlName="CommonSqFt" matInput placeholder="Common SqFt">
+          </mat-form-field>
+        </div>
+        <div fxFlexFill fxLayout="row" fxLayoutGap="5px">
+          <mat-form-field fxFlex>
+            <input type="number" formControlName="CleanableSqFt" matInput placeholder="Cleanable SqFt">
+          </mat-form-field>
+          <mat-form-field fxFlex>
+            <input type="number" formControlName="VacantSqFt" matInput placeholder="Vacant SqFt">
+          </mat-form-field>
+          <mat-form-field fxFlex>
+            <input type="number" formControlName="VacancyCredit" matInput placeholder="Vacancy Credit">
+          </mat-form-field>
+        </div>
+        <div fxFlexFill fxLayout="row" fxLayoutAlign="end start" fxLayoutGap="5px">
+          <a mat-raised-button color="primary" [routerLink]="['/locations']">
+            <mat-icon>cancel</mat-icon> Cancel
+          </a>
+          <a mat-raised-button color="accent" (click)="saveLocation()" [disabled]="!formGroup.valid">
+            <mat-icon>save</mat-icon> Save
+          </a>
+        </div>
+      </div>
+
+
+    </div>
+
+
+  </div>
+</div>

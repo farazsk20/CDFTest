@@ -1,0 +1,69 @@
+<div fxLayout="row" fxLayoutAlign="center start" fxFlexFill>
+  <div fxFlex="60%" fxFlex.lt-lg="95%" fxLayout="column" fxFlexFill fxLayoutAlign="start stretch" fxLayoutGap="10px">
+    <div style="text-align: center;">
+      <h1>Location Listing</h1>
+    </div>
+    <!-- <button mat-raised-button color="primary" (click)="openTitleDialog()" fxFlexAlign="end">Create New Location</button> -->
+    <div fxLayout="column" fxLayoutAlign="center end">
+      <a mat-raised-button [routerLink]="['/newLocation']"><mat-icon>add</mat-icon> New Location</a>
+    </div>
+
+    <mat-form-field>
+      <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter" autocomplete="off">
+    </mat-form-field>
+
+    <table mat-table #table [dataSource]="dataSource" class="mat-elevation-z8" style="width:100%;">
+
+      <ng-container matColumnDef="Name">
+        <th mat-header-cell *matHeaderCellDef> Name </th>
+        <td mat-cell *matCellDef="let row"> {{row.Name}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="Type">
+        <th mat-header-cell *matHeaderCellDef> Type </th>
+        <td mat-cell *matCellDef="let row"> {{row.PropertyType.Name}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="Region">
+        <th mat-header-cell *matHeaderCellDef> Region </th>
+        <td mat-cell *matCellDef="let row"> {{row.Region.Name}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="Address">
+        <th mat-header-cell *matHeaderCellDef> Address </th>
+        <td mat-cell *matCellDef="let row"> {{row.Address}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="Address2">
+        <th mat-header-cell *matHeaderCellDef> Address 2 </th>
+        <td mat-cell *matCellDef="let row"> {{row.Address2}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="City">
+        <th mat-header-cell *matHeaderCellDef> City </th>
+        <td mat-cell *matCellDef="let row"> {{row.City}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="State">
+        <th mat-header-cell *matHeaderCellDef> State </th>
+        <td mat-cell *matCellDef="let row"> {{row.State}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="ZipCode">
+        <th mat-header-cell *matHeaderCellDef> ZipCode </th>
+        <td mat-cell *matCellDef="let row"> {{row.ZipCode}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="Edit">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let row">
+          <button mat-stroked-button color="accent" (click)="EditLocation(row)">Edit</button>
+        </td>
+        <td mat-footer-cell *matFooterCellDef> </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,57 @@
+# See http://help.github.com/ignore-files/ for more about ignoring files.
+
+# compiled output
+/dist
+/tmp
+/out-tsc
+
+# dependencies
+
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# misc
+/.sass-cache
+/connect.lock
+/coverage
+/libpeerconnection.log
+npm-debug.log
+yarn-error.log
+testem.log
+/typings
+
+# System Files
+.DS_Store
+Thumbs.db
+
+
+#misc
+CDF/node_modules/.bin/node-sass
+CDF/node_modules/node-sass/bin/node-sass
+CDF/node_modules/node-sass/vendor/win32-x64-64/binding.node
+.vs/CDF/v15/.suo
+.vs/CDF/v15/Server/sqlite3/
+.vs/config/applicationhost.config
+CDF.Data/bin/CDF.Data.dll
+CDF.Data/bin/CDF.Data.pdb
+CDF.Data/CDF.Data.csproj.user
+CDF.Data/obj/Debug/CDF.Data.csproj.CoreCompileInputs.cache
+CDF.Data/obj/Debug/CDF.Data.csproj.FileListAbsolute.txt
+CDF.Data/obj/Debug/CDF.Data.csproj.GenerateResource.Cache
+CDF.Data/obj/Debug/CDF.Data.csprojAssemblyReference.cache
+CDF.Data/obj/Debug/CDF.Data.dll
+CDF.Data/obj/Debug/CDF.Data.pdb

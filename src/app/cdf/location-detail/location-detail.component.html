@@ -1,0 +1,92 @@
+<div
+  fxLayout="column"
+  fxLayoutAlign="start start"
+  fxLayoutGap="5px"
+  style="padding: 10px;"
+>
+  <div id="actionRow" fxLayout="row wrap" fxLayoutAlign="end end" fxFlexFill>
+    <mat-slide-toggle [(ngModel)]="showStep">{{
+      showStep ? "Expand" : "Show Steps"
+    }}</mat-slide-toggle>
+
+    <button
+      mat-button
+      fxFlex="50px"
+      fxFlexAlign="end"
+      color="accent"
+      matTooltip="Delete Bid"
+      (click)="confirmDelete()"
+      matTooltipPosition="above"
+    >
+      <mat-icon>delete</mat-icon>
+    </button>
+    <button mat-button fxFlex="50px" fxFlexAlign="end" color="accent" matTooltip="Save Bid" (click)="saveLocation()"
+      matTooltipPosition="above">
+      <mat-icon>save</mat-icon>
+    </button>
+  </div>
+  <mat-horizontal-stepper fxFlexFill *ngIf="showStep">
+    <mat-step label="Building Information">
+      <!-- <app-building-info
+          (formReady)="formInitialized('buildingInformation', $event)"
+          [formGroup]="formGroup"
+          [location]="location"
+          [weeks]="WeeksPerMonth"
+          (changed)="onChange($event)"></app-building-info> -->
+      <app-building-info
+        (formReady)="formInitialized('buildingInformation', $event)"
+        [formGroup]="formGroup"
+        [location]="location"
+        [weeks]="WeeksPerMonth"
+        [contractStartDate]="ContractStartDate"
+        [contractEndDate]="ContractEndDate"
+        (changed)="onChange($event)"
+      ></app-building-info>
+    </mat-step>
+    <mat-step label="Staffing Details">
+      <app-staffing-details
+        [location]="location"
+        [ContractStartDate]="ContractStartDate"
+        [ContractEndDate]="ContractEndDate"
+        [WeeksPerMonth]="WeeksPerMonth"
+        (added)="onAdd($event)"
+      ></app-staffing-details>
+    </mat-step>
+    <mat-step label="Costs">
+      <app-costs
+        [location]="location"
+        [ContractStartDate]="ContractStartDate"
+        [ContractEndDate]="ContractEndDate"
+        [WeeksPerMonth]="WeeksPerMonth"
+        (added)="onAdd($event)"
+      ></app-costs>
+    </mat-step>
+    <mat-step label="Service, Supplies & Equipment">
+      <app-sse
+        [location]="location"
+        [ContractStartDate]="ContractStartDate"
+        [ContractEndDate]="ContractEndDate"
+        [WeeksPerMonth]="WeeksPerMonth"
+        (added)="onAdd($event)"
+      ></app-sse>
+    </mat-step>
+  </mat-horizontal-stepper>
+  <div *ngIf="!showStep">
+    <app-building-info
+      [location]="location"
+      [weeks]="WeeksPerMonth"
+    ></app-building-info>
+    <br />
+    <app-staffing-details [location]="location"></app-staffing-details>
+    <br />
+    <app-costs
+      [location]="location"
+      [ContractStartDate]="ContractStartDate"
+      [ContractEndDate]="ContractEndDate"
+      [WeeksPerMonth]="WeeksPerMonth"
+    ></app-costs>
+  </div>
+  <div style="width:100%;">
+    <app-summary [location]="location" [weeks]="WeeksPerMonth"></app-summary>
+  </div>
+</div>

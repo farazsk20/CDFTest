@@ -1,0 +1,157 @@
+<form [formGroup]="CdfForm">
+  <h2 mat-dialog-title>Create New CDF</h2>
+  <mat-dialog-content>
+    <div fxLayout="row wrap" fxLayoutAlign="start end">
+      <mat-form-field fxFlex="100%">
+        <input
+          #Title
+          matInput
+          formControlName="Title"
+          placeholder="Title"
+          required
+        />
+      </mat-form-field>
+
+      <mat-form-field fxFlex="100%">
+        <mat-select
+          placeholder="Company"
+          #Company
+          formControlName="Company"
+          required
+        >
+          <mat-option *ngFor="let item of Companies" [value]="item">
+            {{ item.Name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field fxFlex="50%">
+        <input
+          #CustomerName
+          matInput
+          formControlName="CustomerName"
+          placeholder="Customer Name"
+        />
+      </mat-form-field>
+      <mat-form-field fxFlex="50%">
+        <input
+          #JobNumber
+          matInput
+          formControlName="JobNumber"
+          placeholder="Job #"
+        />
+      </mat-form-field>
+
+      <mat-form-field fxFlex="50%">
+        <input
+          #SalesLead
+          matInput
+          formControlName="SalesLead"
+          placeholder="Sales Lead"
+        />
+      </mat-form-field>
+      <mat-form-field fxFlex="50%">
+        <input
+          #PricingLead
+          matInput
+          formControlName="PricingLead"
+          placeholder="Pricing Lead"
+        />
+      </mat-form-field>
+
+      <mat-form-field fxFlex="100%">
+        <mat-select
+          placeholder="Contract Type"
+          #ContractType
+          formControlName="ContractType"
+        >
+          <mat-option *ngFor="let item of ContractTypes" [value]="item">
+            {{ item.Value }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field fxFlex="100%">
+        <mat-select placeholder="Industry" #Industry formControlName="Industry">
+          <mat-option *ngFor="let item of Industries" [value]="item">
+            {{ item.Value }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field fxFlex="50%">
+        <input
+          matInput
+          [matDatepicker]="contractStartDt"
+          placeholder="Bid Start Date"
+          #ContractStartDate
+          formControlName="ContractStartDate"
+          required
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="contractStartDt"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #contractStartDt></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field fxFlex="50%">
+        <input
+          matInput
+          [matDatepicker]="contractEndDt"
+          placeholder="Bid End Date"
+          #ContractEndDate
+          formControlName="ContractEndDate"
+          required
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="contractEndDt"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #contractEndDt></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field fxFlex="50%">
+        <input
+          matInput
+          [matDatepicker]="contractExecDt"
+          placeholder="Contract Execution Date"
+          #ContractExecutionDate
+          formControlName="ContractExecutionDate"
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="contractExecDt"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #contractExecDt></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field fxFlex="50%">
+        <input
+          matInput
+          [matDatepicker]="contractSubDt"
+          placeholder="Submission Date"
+          #SubmissionDate
+          formControlName="SubmissionDate"
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="contractSubDt"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #contractSubDt></mat-datepicker>
+      </mat-form-field>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions fxLayoutAlign="end center" fxLayoutGap="10px">
+    <button mat-stroked-button mat-dialog-close color="warn">Cancel</button>
+    <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
+    <button
+      mat-stroked-button
+      (click)="close()"
+      color="accent"
+      [disabled]="!CdfForm.valid"
+    >
+      Create
+    </button>
+  </mat-dialog-actions>
+</form>

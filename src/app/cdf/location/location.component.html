@@ -1,0 +1,309 @@
+<form [formGroup]="this.CdfForm">
+  <div fxLayout="column" fxLayoutGap="10px">
+    <div fxLayout="row" fxLayoutAlign="center center">
+      <mat-expansion-panel fxFlex="60" [expanded]="true">
+        <mat-expansion-panel-header style="font-size: 24px; font-weight: 500;">
+          CDF Summary
+        </mat-expansion-panel-header>
+
+        <mat-card fxFlex>
+          <mat-card-content
+            fxLayout="row wrap"
+            fxLayoutAlign="start start"
+            fxLayoutGap="10px"
+          >
+            <mat-form-field fxFlex="100%">
+              <input
+                matInput
+                #title
+                placeholder="Title"
+                formControlName="Title"
+                required
+              />
+            </mat-form-field>
+
+            <mat-form-field fxFlex="100%">
+              <mat-select
+                placeholder="Company"
+                #Company
+                formControlName="Company"
+                [compareWith]="compareCompanyFn"
+              >
+                <mat-option *ngFor="let item of Companies" [value]="item">
+                  {{ item.Name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field fxFlex>
+              <input
+                matInput
+                placeholder="Customer Name"
+                #CustomerName
+                formControlName="CustomerName"
+              />
+            </mat-form-field>
+
+            <mat-form-field fxFlex>
+              <input
+                matInput
+                placeholder="Job #"
+                #JobNumber
+                formControlName="JobNumber"
+              />
+            </mat-form-field>
+
+            <mat-form-field fxFlex>
+              <input
+                matInput
+                placeholder="Sales Lead"
+                #SalesLead
+                formControlName="SalesLead"
+              />
+            </mat-form-field>
+
+            <mat-form-field fxFlex>
+              <input
+                matInput
+                placeholder="Pricing Lead"
+                #PricingLead
+                formControlName="PricingLead"
+              />
+            </mat-form-field>
+
+            <mat-form-field fxFlex>
+              <mat-select
+                placeholder="Contract Type"
+                #ContractType
+                formControlName="ContractType"
+                [compareWith]="compareContractTypeFn"
+              >
+                <mat-option *ngFor="let item of ContractTypes" [value]="item">
+                  {{ item.Value }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field fxFlex>
+              <mat-select
+                placeholder="Industry"
+                #Industry
+                formControlName="Industry"
+                [compareWith]="compareIndustryFn"
+              >
+                <mat-option *ngFor="let item of Industries" [value]="item">
+                  {{ item.Value }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field fxFlex>
+              <input
+                matInput
+                [matDatepicker]="contractStartDt"
+                placeholder="Bid Start Date"
+                formControlName="ContractStartDate"
+                (dateChange)="confirmBenefitDeletion($event)"
+                required
+              />
+              <mat-datepicker-toggle
+                matSuffix
+                [for]="contractStartDt"
+              ></mat-datepicker-toggle>
+              <mat-datepicker #contractStartDt></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field fxFlex>
+              <input
+                matInput
+                [matDatepicker]="contractEndDt"
+                placeholder="Bid End Date"
+                formControlName="ContractEndDate"
+                (dateChange)="confirmBenefitDeletion($event)"
+                required
+              />
+              <mat-datepicker-toggle
+                matSuffix
+                [for]="contractEndDt"
+              ></mat-datepicker-toggle>
+              <mat-datepicker #contractEndDt></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field fxFlex>
+              <input
+                matInput
+                [matDatepicker]="contractExecDt"
+                placeholder="Contract Execution Date"
+                formControlName="ContractExecutionDate"
+              />
+              <mat-datepicker-toggle
+                matSuffix
+                [for]="contractExecDt"
+              ></mat-datepicker-toggle>
+              <mat-datepicker #contractExecDt></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field fxFlex>
+              <input
+                matInput
+                [matDatepicker]="contractSubDt"
+                placeholder="Submission Date"
+                formControlName="SubmissionDate"
+              />
+              <mat-datepicker-toggle
+                matSuffix
+                [for]="contractSubDt"
+              ></mat-datepicker-toggle>
+              <mat-datepicker #contractSubDt></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field fxFlex>
+              <input
+                matInput
+                type="number"
+                placeholder="Weeks Per Month"
+                #CustomerName
+                formControlName="WeeksPerMonth"
+                required
+              />
+            </mat-form-field>
+
+            <div fxFlex="100%" *ngIf="cdf?.Locations.length > 0">
+              <table fxFlex>
+                <thead>
+                  <tr class="mat-header-row">
+                    <th class="mat-header-cell"></th>
+                    <th class="mat-header-cell">
+                      Monthly
+                    </th>
+                    <th class="mat-header-cell">
+                      Yearly
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="mat-row">
+                    <td class="mat-cell">
+                      Total Labor, Payroll & Other Costs
+                    </td>
+                    <td class="mat-cell">
+                      {{ monthlyCosts | currency: "USD":"symbol":"1.2-2" }}
+                    </td>
+                    <td class="mat-cell">
+                      {{ monthlyCosts * 12 | currency: "USD":"symbol":"1.2-2" }}
+                    </td>
+                  </tr>
+                  <tr class="mat-row">
+                    <td class="mat-cell">
+                      Total Union Benefits
+                    </td>
+                    <td class="mat-cell">
+                      {{ monthlyBenefits | currency: "USD":"symbol":"1.2-2" }}
+                    </td>
+                    <td class="mat-cell">
+                      {{
+                        monthlyBenefits * 12 | currency: "USD":"symbol":"1.2-2"
+                      }}
+                    </td>
+                  </tr>
+                  <tr class="mat-row">
+                    <td class="mat-cell">
+                      Total Overhead & Mark Up
+                    </td>
+                    <td class="mat-cell">
+                      {{ monthlyOverhead | currency: "USD":"symbol":"1.2-2" }}
+                    </td>
+                    <td class="mat-cell">
+                      {{
+                        monthlyOverhead * 12 | currency: "USD":"symbol":"1.2-2"
+                      }}
+                    </td>
+                  </tr>
+                </tbody>
+                <tfoot>
+                  <tr class="mat-footer-row">
+                    <td class="mat-footer-cell">
+                      <strong>TOTAL COST AT 100% OCCUPANCY</strong>
+                    </td>
+                    <td class="mat-footer-cell">
+                      <strong>
+                        {{
+                          totalCosts + monthlyOverhead
+                            | currency: "USD":"symbol":"1.2-2"
+                        }}
+                      </strong>
+                    </td>
+                    <td class="mat-footer-cell">
+                      <strong>
+                        {{ totalCosts * 12 | currency: "USD":"symbol":"1.2-2" }}
+                      </strong>
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-action-row
+          fxLayout="row"
+          fxLayoutAlign="end center"
+          fxLayoutGap="10px"
+        >
+          <button
+            mat-stroked-button
+            color="accent"
+            style="float:right; margin-left: 5px;"
+            (click)="addLocation()"
+            matTooltip="Add New
+          Bid"
+            matTooltipPosition="above"
+          >
+            <mat-icon>add</mat-icon> Add Bid
+          </button>
+          <button
+            mat-stroked-button
+            color="accent"
+            style="float:right;"
+            (click)="saveCDF()"
+            [disabled]="!CdfForm.valid"
+          >
+            <mat-icon>save</mat-icon> Save CDF
+          </button>
+        </mat-action-row>
+      </mat-expansion-panel>
+    </div>
+    <div fxLayout="row" fxLayoutAlign="center center">
+      <mat-card fxFlex="95">
+        <mat-card-actions
+          fxLayout="row wrap"
+          fxLayoutAlign="end center"
+          fxLayoutGap="10px"
+        >
+          <!-- <button fxFlexAlign="end" mat-button color="accent" (click)="createTemplate()" matTooltip="Add New Location" matTooltipPosition="above">Create Template</button> -->
+        </mat-card-actions>
+        <mat-card-title>Bids</mat-card-title>
+        <mat-card-content>
+          <mat-tab-group [selectedIndex]="selectedTab">
+            <mat-tab
+              *ngFor="let loc of cdf?.Locations; let indx = index"
+              label="{{ loc.Location?.Name }} ({{ loc.LOS?.Description }})"
+            >
+              <app-location-detail
+                [formGroup]="CdfForm"
+                [location]="loc"
+                [ContractStartDate]="CdfForm.get('ContractStartDate').value"
+                [ContractEndDate]="CdfForm.get('ContractEndDate').value"
+                [WeeksPerMonth]="CdfForm.get('WeeksPerMonth').value"
+                (changed)="onChange($event)"
+                (formReady)="formInitialized('LocationDetail', $event)"
+                (locationDeleted)="removeLocation()"
+              >
+              </app-location-detail>
+            </mat-tab>
+          </mat-tab-group>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</form>

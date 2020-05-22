@@ -1,0 +1,420 @@
+<button (click)="downloadPDF()" style="margin-top:40px; font-weight:bold; ">
+      EXPORT TO PDF</button><span style=" margin-left: 20px;"></span>
+  <button (click)="downloadExcel()" style="margin-top:20px; font-weight:bold;">
+      EXPORT TO EXCEL</button>
+  <div fxLayout="row" fxLayoutAlign="center start" fxFlexFill #content>
+       
+    <div fxFlex="100%" fxFlex.lt-lg="95%" fxLayout="column" fxFlexFill fxLayoutAlign="start stretch" fxLayoutGap="30px">
+           
+      <table  class="center" >
+        <tbody>
+          <tr><td>{{cdf?.CustomerName}}</td></tr>
+          <tr><td>{{bid?.Location?.Address}}</td></tr>
+          <tr><td>{{bid?.Location?.Address2}}</td></tr>
+          <tr><td>{{bid?.Location?.City}}, {{bid?.Location?.State}} {{bid?.Location?.ZipCode}}</td></tr>
+          <tr><td>Effective Date: {{cdf?.ContractStartDate | date: 'dd/MM/yyyy'}}</td></tr>       
+        </tbody>
+      </table>
+      <table >
+        <tbody>
+          <tr style="font-weight: bold;">
+            <td colspan="3" ></td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.Classification}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3" style="font-style: italic; font-weight: bold;">Base Wage </td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{ staff?.BaseWage | number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3">Taxes & Ins </td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.TaxesAndIns | number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3">Effective Taxes and Insurance %</td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.EffectiveTaxesAndInsurance}}%
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3">Health & Welfare </td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.HealthAndWelfare | number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3">Pension/401K </td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.Pension401K | number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3">Training Fund</td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.TrainingFund | number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3">Other </td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.Other | number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3">Uniform Charges </td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.UniformCharges | number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3">Trust Fund Audit Compliance </td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.TrustFundAuditCompliance | number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3">Technology Hosting/Retention </td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.TechnologyHosting_Retention | number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3">Cyber Security </td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.CyberSecurity| number: "1.2-2"}}
+            </td>
+          </tr>
+          
+          <tr>
+            <td colspan="3">Sub-Total Hourly Rate </td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.SubTotalHourlyRate | number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">Safety </td>
+            <td>{{SafetyCostPercent}}%</td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.Safety | number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">Overhead </td>
+            <td>{{OverheadCostPercent}}%</td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.Overhead | number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">Profit</td>
+            <td>{{ProfitCostPercent}}%</td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.Profit| number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">Gross Receipt Tax </td>
+            <td>{{SFGRTPercent}}%</td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.SFGRT | number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">Sales Tax </td>
+            <td>{{SalesTaxPercent}}%</td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.SalesTax | number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">B&O Tax </td>
+            <td>{{BOTaxPercent}}%</td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.BAndOTax | number: "1.2-2"}}
+            </td>
+          </tr>
+          
+          <tr>
+            <td colspan="3" style="font-style: italic; font-weight: bold;">Total Hourly Rate </td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.TotalHourlyRate | number: "1.2-2"}}
+            </td>
+          </tr>
+       
+          
+          <tr>
+            <td colspan="3" style="font-weight: bold;">TOTAL CALCULATED MONTHLY </td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.TotalMonthly | number: "1.2-2"}}
+            </td>
+          </tr>
+          
+          <tr>
+            <td colspan="3" style="font-style: italic; font-weight: bold;">Overtime (x 1.5) </td>
+            <td *ngFor="let staff of wctReportStaff">
+            </td>
+          </tr>
+          
+          <tr>
+            <td colspan="3" >Overtime Base Wage Rate </td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{ staff?.BaseWageOT | number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3">Taxes & Ins </td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.TaxesAndInsOT | number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3">Health & Welfare </td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.HealthAndWelfareOT | number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3">Pension </td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.Pension401KOT | number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3">Sub Total </td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.OverTimeSubTotal | number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">Safety </td>
+            <td>{{SafetyCostPercent}}%</td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.SafetyOT | number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">Overhead </td>
+            <td>{{OverheadCostPercent}}%</td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.OverheadOT | number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">Profit</td>
+            <td>{{ProfitCostPercent}}%</td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.ProfitOT | number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">SFGRT </td>
+            <td>{{SFGRTPercent}}%</td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.SFGRTOT | number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">Sales Tax </td>
+            <td>{{SalesTaxPercent}}%</td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.SalesTaxOT | number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">B&O Tax</td>
+            <td>{{BOTaxPercent}}%</td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.BAndOTaxOT | number: "1.2-2"}}
+            </td>
+          </tr>
+          
+          <tr>
+            <td colspan="3" style="font-weight: bold;">Total Overtime Rate </td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.OverTimeTotal | number: "1.2-2"}}
+            </td>
+          </tr>
+      
+          <tr>
+            <td colspan="3" style="font-style: italic; font-weight: bold;">Doubletime Rate (x 2) </td>
+            <td *ngFor="let staff of wctReportStaff">
+            </td>
+          </tr>
+          
+          <tr>
+            <td colspan="3">Doubletime Base Wage Rate </td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{ staff?.BaseWageDT | number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3">Taxes & Ins </td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.TaxesAndInsDT | number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3">Health & Welfare </td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.HealthAndWelfareDT | number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3">Pension </td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.Pension401KDT | number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3">Sub Total </td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.DoubleTimeSubTotal | number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">Safety </td>
+            <td>{{SafetyCostPercent}}%</td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.SafetyDT | number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">Overhead </td>
+            <td>{{OverheadCostPercent}}%</td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.OverheadDT | number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">Profit</td>
+            <td>{{ProfitCostPercent}}%</td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.ProfitDT | number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">SFGRT </td>
+            <td>{{SFGRTPercent}}%</td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.SFGRTDT | number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">Sales Tax </td>
+            <td>{{SalesTaxPercent}}%</td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{ staff?.SalesTaxDT | number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">B&O Tax</td>
+            <td>{{BOTaxPercent}}%</td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.BAndOTaxDT | number: "1.2-2"}}
+            </td>
+          </tr>
+          
+          <tr>
+            <td colspan="3" style="font-style: italic; font-weight: bold;">Total Doubletime Rate </td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.DoubleTimeTotal | number: "1.2-2"}}
+            </td>
+          </tr>
+          
+          <tr>
+            <td colspan="3" style="font-style: italic; font-weight: bold;">Doubletime & Half Rate (x 2.5) </td>
+            <td *ngFor="let staff of wctReportStaff">
+            </td>
+          </tr>
+          
+          <tr>
+            <td colspan="3">Doubletime & Half Base Wage Rate </td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{ staff?.BaseWageDTH | number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3">Taxes & Ins </td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.TaxesAndInsDTH | number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3">Health & Welfare </td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.HealthAndWelfareDTH | number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3">Pension </td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.Pension401KDTH | number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3">Sub Total </td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.DoubleTimeAndHalfSubTotal | number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">Safety </td>
+            <td>{{SafetyCostPercent}}%</td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.SafetyDTH | number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">Overhead </td>
+            <td>{{OverheadCostPercent}}%</td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.OverheadDTH | number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">Profit</td>
+            <td>{{ProfitCostPercent}}%</td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.ProfitDTH | number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">SFGRT </td>
+            <td>{{SFGRTPercent}}%</td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.SFGRTDTH | number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">Sales Tax </td>
+            <td>{{SalesTaxPercent}}%</td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{staff?.SalesTaxDTH | number: "1.2-2"}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">B&O Tax</td>
+            <td>{{BOTaxPercent}}%</td>
+            <td>
+              {{staff?.BAndOTaxDTH | number: "1.2-2"}}
+            </td>
+          </tr>
+          
+          <tr>
+            <td colspan="3" style="font-style: italic; font-weight: bold;">Total Doubletime & Half Rate </td>
+            <td *ngFor="let staff of wctReportStaff">
+              {{ staff?.DoubleTimeAndHalfTotal | number: "1.2-2"}}
+            </td>
+          </tr>
+          
+        </tbody>
+      </table>
+    </div>
+  </div>
+  
+

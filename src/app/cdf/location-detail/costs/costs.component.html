@@ -1,0 +1,216 @@
+<div fxlayout="column">
+  <mat-card class="mat-elevation-z8">
+    <mat-card-content>
+      <form #costInputFrm="ngForm">
+        <div fxLayout="row wrap" fxLayoutAlign="start end" fxLayoutGap="5px">
+
+          <mat-form-field fxFlex>
+            <mat-select [formControl]="bankCtrl" #singleSelect name="sseType" [(ngModel)]="newCostType" placeholder="Type" required>
+              <mat-option>
+                <ngx-mat-select-search [placeholderLabel]="'Search...'" [formControl]="bankFilterCtrl" [noEntriesFoundLabel]="'Not Found...'">
+                </ngx-mat-select-search>
+              </mat-option>
+
+              <mat-option *ngFor="let type of filteredBanks | async" [value]="type">
+                {{ type.Value }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- <mat-form-field fxFlex>
+            <mat-select
+              name="sseType"
+              [(ngModel)]="newCostType"
+              placeholder="Type"
+              required
+            >
+              <mat-option *ngFor="let type of costTypes" [value]="type">{{
+                type.Value
+              }}</mat-option>
+            </mat-select>
+          </mat-form-field> -->
+
+          <mat-form-field fxFlex>
+            <mat-select name="sseCategory" [(ngModel)]="newCost.Cost" [compareWith]="compareCostsFn" placeholder="Cost" required>
+              <mat-option *ngFor="let cost of newCostType?.Costs" [value]="cost">
+                {{ cost.Name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- <mat-form-field fxFlex>
+            <mat-select [formControl]="bankCtrl1" #singleSelect name="sseCategory" [(ngModel)]="newCost.Cost" [compareWith]="compareCostsFn"
+              placeholder="Cost" required>
+              <mat-option>
+                <ngx-mat-select-search [formControl]="bankFilterCtrl1" [placeholderLabel]="'Search...'" [noEntriesFoundLabel]="'Not Found...'">
+                </ngx-mat-select-search>
+              </mat-option>
+
+              <mat-option *ngFor="let cost of bankCtrl?.filteredBanks1 | async" [value]="cost">
+                {{ cost.Name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field> -->
+
+          <mat-form-field fxFlex>
+            <mat-select name="ssePricingMethod" [(ngModel)]="newCost.PricingMethod" [compareWith]="comparePricingMethodsFn" placeholder="Pricing Method"
+              (selectionChange)="calculateCost(newCost)" required>
+              <mat-option *ngFor="let Method of getPricingMethods(newCost.Cost)" [value]="Method">
+                {{ Method.Value }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field fxFlex>
+            <input matInput type="number" name="Value" [(ngModel)]="newCost.Value" class="center" placeholder="Value" (change)="calculateCost(newCost)"
+              required />
+          </mat-form-field>
+
+          <mat-form-field fxFlex>
+            <input name="FromDate" matInput [matDatepicker]="FromDate" placeholder="Starting Date" [(ngModel)]="newCost.FromDate" (change)="calculateCost(newCost)"
+              required />
+            <mat-datepicker-toggle matSuffix [for]="FromDate"></mat-datepicker-toggle>
+            <mat-datepicker #FromDate [startAt]="ContractStartDate" (change)="calculateCost(newCost)"></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field fxFlex>
+            <input name="ToDate" matInput [matDatepicker]="ToDate" placeholder="Ending Date" [(ngModel)]="newCost.ToDate" (change)="calculateCost(newCost)"
+              required />
+            <mat-datepicker-toggle matSuffix [for]="ToDate">
+            </mat-datepicker-toggle>
+            <mat-datepicker #ToDate [startAt]="ContractEndDate" (change)="calculateCost(newCost)"></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field fxFlex>
+            <input matInput type="number" name="MonthlyValue" [(ngModel)]="newCost.Total" class="center" placeholder="Monthly Value"
+              readonly />
+          </mat-form-field>
+
+          <mat-form-field fxFlex>
+            <input matInput type="number" name="YearlyValue" value="{{ newCost.Total * 12 }}" class="center" placeholder="Yearly Value"
+              readonly />
+          </mat-form-field>
+
+          <button id="btnAddSSE" name="btnAddSSE" mat-raised-button color="accent" fxFlex="4%" (click)="addCost(newCost)" [disabled]="savingNewCost || !costInputFrm.form.valid">
+            <mat-icon *ngIf="!savingNewCost" aria-label="label">add</mat-icon>
+            <mat-icon *ngIf="savingNewCost">
+              <mat-spinner color="primary" diameter="20"></mat-spinner>
+            </mat-icon>
+          </button>
+        </div>
+      </form>
+
+      <div>
+        <div *ngFor="
+            let item of location.Costs
+              | orderBy: 'Cost.CostType.Id'
+              | groupBy: 'Cost.CostType.Value'
+              | pairs;
+            index as i
+          " fxLayout="column" fxLayoutAlign="start start" fxFlexFill>
+          <h2>{{ item[0] }}</h2>
+
+          <mat-table [dataSource]="item[1]" fxFill>
+            <ng-container matColumnDef="Name">
+              <mat-header-cell *matHeaderCellDef>
+                Cost
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <mat-form-field>
+                  <mat-select name="{{ i }}_Cost_{{ element.Id }}" [(ngModel)]="element.Cost" [compareWith]="compareCostsFn">
+                    <mat-option *ngFor="let cost of filterCosts(item[0])" [value]="cost">
+                      {{ cost.Name }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="PricingMethod">
+              <mat-header-cell *matHeaderCellDef>
+                Pricing Method
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <mat-form-field>
+                  <mat-select name="{{ i }}_PricingMethod_{{ element.Id }}" [(ngModel)]="element.PricingMethod" [compareWith]="comparePricingMethodsFn"
+                    (selectionChange)="calculateCost(element)">
+                    <mat-option *ngFor="let Method of getPricingMethods(element.Cost)" [value]="Method">
+                      {{ Method.Value }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="Value">
+              <mat-header-cell *matHeaderCellDef>
+                Value
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <mat-form-field>
+                  <input matInput type="number" name="{{ i }}_Value_{{ element.Id }}" [(ngModel)]="element.Value" class="center" (change)="calculateCost(element)"
+                  />
+                </mat-form-field>
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="MonthlyCost">
+              <mat-header-cell *matHeaderCellDef>
+                Monthly Value
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <mat-form-field>
+                  <input matInput type="number" name="{{ i }}_MonthlyTotal_{{ element.Id }}" value="{{ element.Total }}" class="center" readonly
+                  />
+                </mat-form-field>
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="YearlyCost">
+              <mat-header-cell *matHeaderCellDef>
+                Yearly Value
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <mat-form-field>
+                  <input matInput type="number" name="{{ i }}_YearlyTotal_{{ element.Id }}" class="center" value="{{ element.Total * 12 }}"
+                    readonly />
+                </mat-form-field>
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="StartDate">
+              <mat-header-cell *matHeaderCellDef>
+                Start Date
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <mat-form-field>
+                  <input name="{{ i }}_FromDate_{{ element.Id }}" matInput [matDatepicker]="FromDate" [(ngModel)]="element.FromDate" (change)="calculateCost(element)"
+                  />
+                  <mat-datepicker-toggle matSuffix [for]="FromDate"></mat-datepicker-toggle>
+                  <mat-datepicker #FromDate [startAt]="ContractStartDate"></mat-datepicker>
+                </mat-form-field>
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="EndDate">
+              <mat-header-cell *matHeaderCellDef>
+                End Date
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <mat-form-field>
+                  <input name="{{ i }}_ToDate_{{ element.Id }}" matInput [matDatepicker]="ToDate" [(ngModel)]="element.ToDate" (change)="calculateCost(element)"
+                  />
+                  <mat-datepicker-toggle matSuffix [for]="ToDate">
+                  </mat-datepicker-toggle>
+                  <mat-datepicker #ToDate [startAt]="ContractEndDate"></mat-datepicker>
+                </mat-form-field>
+              </mat-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+          </mat-table>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

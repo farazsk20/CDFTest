@@ -1,0 +1,55 @@
+<form [formGroup]="frmBidTax">
+  <h2 mat-dialog-title>Add/Modify CBM Union Benefit</h2>
+  <mat-dialog-content>
+    <div fxLayout="row wrap" fxLayoutAlign="start end">
+      <mat-form-field fxFlex>
+        <mat-select placeholder="Benefit Type" formControlName="BenefitType" [compareWith]="compareBenefitTypeFn"
+          (selectionChange)="update_CBM_Contribution()" required>
+          <mat-option *ngFor="let item of benefitTypes" [value]="item">
+            {{item.Value}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field fxFlex>
+        <mat-select placeholder="Rate Type" formControlName="RateType" [compareWith]="compareRateTypeFn"
+          (selectionChange)="update_CBM_Contribution()" required>
+          <mat-option *ngFor="let item of rateTypes" [value]="item">
+            {{item.Value}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field fxFlex="50%">
+        <input formControlName="EffectiveDate" name="EffectiveDate" matInput [matDatepicker]="EffectiveDate" placeholder="EffectiveDate">
+        <mat-datepicker-toggle matSuffix [for]="EffectiveDate"></mat-datepicker-toggle>
+        <mat-datepicker #EffectiveDate></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field fxFlex="50%">
+        <input formControlName="ExpirationDate" name="ExpirationDate" matInput [matDatepicker]="ExpirationDate" placeholder="ExpirationDate">
+        <mat-datepicker-toggle matSuffix [for]="ExpirationDate"></mat-datepicker-toggle>
+        <mat-datepicker #ExpirationDate></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field fxFlex="50%">
+        <input formControlName="Rate" matInput placeholder="Rate" type="number"
+          (change)="update_CBM_Contribution()">
+      </mat-form-field>
+
+      <mat-form-field fxFlex="50%">
+        <input formControlName="Contribution" matInput placeholder="Total" readonly
+          [value]="frmCBMBenefit.get('Contribution').value | currency: 'USD':'symbol':'1.2-2'">
+      </mat-form-field>
+
+      <div style="margin-left: 10px;padding-bottom: 20px;" fxFlex>
+        <mat-checkbox formControlName="Override" (change)="toggleCBM_Override($event)" [disabled]="this.data.benefit.Added">Override</mat-checkbox>
+      </div>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions fxLayoutAlign="end center" fxLayoutGap="10px">
+    <button mat-stroked-button mat-dialog-close color="warn">Cancel</button>
+    <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
+    <button mat-stroked-button (click)="close()" color="accent" [disabled]="!frmBidTax.valid">OK</button>
+  </mat-dialog-actions>
+</form>

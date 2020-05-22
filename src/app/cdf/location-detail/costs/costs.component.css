@@ -1,0 +1,22 @@
+/* table,
+th,
+td {
+  border: 1px solid black;
+} */
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.mat-row,
+.mat-header-row,
+.mat-footer-row,
+th.mat-header-cell,
+td.mat-cell,
+td.mat-footer-cell {
+  border-color: transparent !important;
+}

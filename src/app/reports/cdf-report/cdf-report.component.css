@@ -1,0 +1,20 @@
+.costs {
+  font-style: italic;
+}
+.center {
+  text-align: center;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+table,
+th,
+td {
+  border: 1px solid black;
+}
+
+kendo-pdf-export {
+  font-size: 12px;
+}

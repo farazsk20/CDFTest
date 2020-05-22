@@ -1,0 +1,134 @@
+<form [formGroup]="buildingInfoForm">
+  <mat-card class="mat-elevation-z8">
+    <mat-card-content>
+      <div fxLayout="row wrap" *ngIf="showMonthsMessage && !buildingInfoForm.controls.Months.value">
+        <mat-label style="color: red;">Please enter a value for Months</mat-label>
+      </div>
+      <div fxLayout="row wrap" fxLayoutAlign="start end">
+        <mat-form-field fxFlex="25%" *ngIf="!(buildingInfoForm.controls.StopFlag.value?.Value == 'Stop' ||
+          buildingInfoForm.controls.StopFlag.value?.Value == 'Stops Plus')">
+          <mat-select placeholder="Stop Flag" #StopFlag formControlName="StopFlag" [compareWith]="compareStopFlagFn" (selectionChange)="StopFlagSelected()">
+            <mat-option *ngFor="let flag of StopFlags" [value]="flag">
+              {{flag.Value}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field fxFlex="15%" *ngIf="(buildingInfoForm.controls.StopFlag.value?.Value == 'Stop' ||
+          buildingInfoForm.controls.StopFlag.value?.Value == 'Stops Plus')">
+          <mat-select placeholder="Stop Flag" #StopFlag formControlName="StopFlag" [compareWith]="compareStopFlagFn" (selectionChange)="StopFlagSelected()">
+            <mat-option *ngFor="let flag of StopFlags" [value]="flag">
+              {{flag.Value}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field fxFlex="10%" *ngIf="buildingInfoForm.controls.StopFlag.value?.Value == 'Stop' ||
+          buildingInfoForm.controls.StopFlag.value?.Value == 'Stops Plus'">
+          <input matInput placeholder="Months" type="number" #Months formControlName="Months">
+        </mat-form-field>
+
+        <mat-form-field fxFlex="25%" *ngIf="AES_Unions && AES_Unions.length> 0">
+          <mat-select [formControl]="bankCtrl1" #singleSelect placeholder="AES Union" #AES_Union formControlName="AES_Union" [compareWith]="compareAES_UnionsFn">
+            <mat-option>
+              <ngx-mat-select-search [formControl]="bankFilterCtrl1" [placeholderLabel]="'Search...'" [noEntriesFoundLabel]="'Not Found...'">
+              </ngx-mat-select-search>
+            </mat-option>
+
+            <mat-option *ngFor="let Union of filteredBanks1 | async" [value]="Union">
+              {{Union.Name}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- <mat-form-field fxFlex="25%" *ngIf="AES_Unions && AES_Unions.length> 0">
+          <mat-select placeholder="AES Union" #AES_Union formControlName="AES_Union" [compareWith]="compareAES_UnionsFn">
+            <mat-option></mat-option>
+            <mat-option *ngFor="let Union of AES_Unions" [value]="Union">
+              {{Union.Name}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field> -->
+        <!-- faraz code -->
+        <mat-form-field fxFlex="25%" *ngIf="CBM_Unions && CBM_Unions.length> 0">
+          <mat-select [formControl]="bankCtrl" placeholder="CBM Union" #singleSelect #CBM_Union formControlName="CBM_Union" [compareWith]="compareCBM_UnionsFn">
+            <mat-option>
+              <ngx-mat-select-search [placeholderLabel]="'Search...'" [formControl]="bankFilterCtrl" [noEntriesFoundLabel]="'Not Found...'">
+              </ngx-mat-select-search>
+            </mat-option>
+
+            <mat-option *ngFor="let Union of filteredBanks | async" [value]="Union">
+              {{Union.Name}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- <mat-form-field fxFlex="25%" *ngIf="CBM_Unions && CBM_Unions.length> 0">
+          <mat-select placeholder="CBM Union" #CBM_Union formControlName="CBM_Union" [compareWith]="compareCBM_UnionsFn">
+            <mat-option></mat-option>
+            <mat-option *ngFor="let Union of CBM_Unions" [value]="Union">
+              {{Union.Name}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field> -->
+
+        <mat-form-field fxFlex="25%" *ngIf="NonUnionBenefits">
+          <mat-select placeholder="Non-Union Code" #NonUnionBenefit formControlName="NonUnionBenefit" [compareWith]="compareNonUnionFn">
+            <mat-option></mat-option>
+            <mat-option *ngFor="let Code of NonUnionBenefits" [value]="Code">
+              {{Code.Code}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field fxFlex="25%" *ngIf="buildingInfoForm.controls.NonUnionBenefit.value != null">
+          <input matInput placeholder="Markup" type="number" #Markup formControlName="Markup">
+        </mat-form-field>
+      </div>
+
+      <div fxLayout="row wrap" fxLayoutAlign="start end">
+        <mat-form-field fxFlex="25%">
+          <input matInput placeholder="Address" type="text" #Address formControlName="Address" readonly>
+        </mat-form-field>
+
+        <mat-form-field fxFlex="25%">
+          <input matInput placeholder="Address 2" type="text" #Address2 formControlName="Address2" readonly>
+        </mat-form-field>
+
+        <mat-form-field fxFlex="25%">
+          <input matInput placeholder="City" type="text" #City formControlName="City" readonly>
+        </mat-form-field>
+
+        <mat-form-field fxFlex="25%">
+          <input matInput placeholder="State" type="text" #State formControlName="State" readonly>
+        </mat-form-field>
+
+        <mat-form-field fxFlex="25%">
+          <input matInput placeholder="Zip Code" type="text" #ZipCode formControlName="ZipCode" readonly>
+        </mat-form-field>
+
+        <mat-form-field fxFlex>
+          <input matInput placeholder="Total Sq Ft" type="number" #BuildSqFt formControlName="BuildSqFt">
+        </mat-form-field>
+
+        <mat-form-field fxFlex>
+          <input matInput placeholder="Rentable Sq Ft" type="number" #RentableSqFt formControlName="RentableSqFt">
+        </mat-form-field>
+
+        <mat-form-field fxFlex>
+          <input matInput placeholder="Common Sq Ft" type="number" #CommonSqFt formControlName="CommonSqFt">
+        </mat-form-field>
+
+        <mat-form-field fxFlex>
+          <input matInput placeholder="Cleanable Sq Ft" type="number" #CleanableSqFt formControlName="CleanableSqFt">
+        </mat-form-field>
+
+        <mat-form-field fxFlex>
+          <input matInput placeholder="Vacant Sq Ft" type="number" #VacantSqFt formControlName="VacantSqFt">
+        </mat-form-field>
+
+        <mat-form-field fxFlex>
+          <textarea matInput placeholder="Note" type="text" #Note formControlName="Note"></textarea>
+        </mat-form-field>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</form>

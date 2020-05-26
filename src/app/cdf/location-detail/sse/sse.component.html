@@ -54,7 +54,7 @@
               </mat-option>
 
               <mat-option *ngFor="let cat of filteredBanks1 | async" [value]="cat">
-                ({{ cat.Id }}) {{ cat.Name }}
+                ({{ cat.Code }}) {{ cat.Name }}
               </mat-option>
             </mat-select>
           </mat-form-field>

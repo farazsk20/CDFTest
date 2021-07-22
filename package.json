@@ -54,7 +54,7 @@
     "rxjs": "6.0.0",
     "typescript": "^2.9.2",
     "underscore": "^1.9.1",
-    "xlsx": "^0.15.2",
+    "xlsx": "^0.17.0",
     "zone.js": "~0.8.26"
   },
   "devDependencies": {
